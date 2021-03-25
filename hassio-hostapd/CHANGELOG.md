@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0.1] -> This Fork
+### Added
+- Support for aditional settings
+  - Hide SSID
+  - Country
+  - Domain
+  - Lease time
+
 ## [1.1.0]
 ### Changed
 - Add possibility to configure the DHCP and Hosapd settings for better customization of the access point
