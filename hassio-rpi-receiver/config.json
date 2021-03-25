@@ -1,0 +1,26 @@
+{
+    "name": "RPi RF Receiver",
+    "version": "1.5",
+    "slug": "rfreceiver",
+    "description": "RPi RF Receiver Script",
+    "url": "https://github.com/fryguy04/hassio-addons",
+    "startup": "application",
+    "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
+    "boot": "auto",
+    "devices": ["/dev/mem:/dev/mem:rw"],
+    "privileged": ["SYS_RAWIO"],
+    "gpio": "true",
+    "apparmor": "false",
+    "ports": {"5055/tcp": null},
+    "options": {
+  "code": "/share/rpi-rf_receive.py",
+  "requirements": [
+    "rpi-rf"
+  ],
+  "clean": true
+},
+    "schema": {"code": "str",
+	       "requirements": ["str"],
+	       "clean": "bool?"},
+    "map": ["share"]
+} 
