@@ -1,37 +1,25 @@
 {
-  "name": "Hassio Hostapd Extended",
-  "version": "1.1.0",
-  "slug": "hassio-hostapd-extended",
-  "description": "Access point for your IoT devives with configurable network interface and DHCP server",
+  "name": "Wifi Hotspot",
+  "version": "1.1.0.1",
+  "slug": "hassio-hostapd",
+  "description": "A wifi hotspot, with configurable network interface and DHCP server",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
-  "url": "https://github.com/joaofl/hassio-addons/tree/master/hassio-hostapd",
+  "url": "https://github.com/avlisiur78/hassio-addons/tree/master/hassio-hostapd",
   "startup": "system",
   "boot": "auto",
   "host_network": true,
   "apparmor": false,
   "host_dbus": true,
   "full_access": true,
-  "privileged": [
-    "NET_ADMIN",
-    "SYS_ADMIN",
-    "SYS_RAWIO",
-    "SYS_TIME",
-    "SYS_NICE"
-  ],
-  "devices": [
-    "/dev/mem:/dev/mem:rwm"
-  ],
-  "map": [
-    "config:rw",
-    "ssl:rw",
-    "addons:rw",
-    "share:rw",
-    "backup:rw"
-  ],
+  "privileged": ["NET_ADMIN","SYS_ADMIN","SYS_RAWIO","SYS_TIME","SYS_NICE"],
+  "devices": ["/dev/mem"],
+  "map": ["config:rw","ssl:rw","addons:rw","share:rw","backup:rw"],
   "options": {
-    "ssid": "",
-    "wpa_passphrase": "",
+    "ssid": "HomeAssistant",
+    "wpa_passphrase": "12345678",
     "channel": "0",
+    "country": "US",
+    "ignore_broadcast_ssid": "0",
     "address": "192.168.2.1",
     "netmask": "255.255.255.0",
     "broadcast": "192.168.2.254",
@@ -42,12 +30,16 @@
     "dhcp_end": "192.168.2.200",
     "dhcp_dns": "1.1.1.1",
     "dhcp_subnet": "255.255.255.0",
-    "dhcp_router": "192.168.2.1"
+    "dhcp_router": "192.168.2.1",
+    "dhcp_domain": "local",
+    "dhcp_lease": "864000"
   },
   "schema": {
     "ssid": "str",
     "wpa_passphrase": "str",
     "channel": "int",
+    "country": "str",
+    "ignore_broadcast_ssid": "int",
     "address": "str",
     "netmask": "str",
     "broadcast": "str",
@@ -58,6 +50,8 @@
     "dhcp_end": "str",
     "dhcp_dns": "str",
     "dhcp_subnet": "str",
-    "dhcp_router": "str"
+    "dhcp_router": "str",
+    "dhcp_domain": "str",
+    "dhcp_lease": "int"
   }
 } 
