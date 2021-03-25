@@ -9,7 +9,7 @@ reset_interfaces(){
 }
 
 term_handler(){
-    echo "Resseting interfaces"
+    echo "Reseting interfaces"
     reset_interfaces
     echo "Stopping..."
     exit 0
@@ -25,6 +25,8 @@ CONFIG_PATH=/data/options.json
 SSID=$(jq --raw-output ".ssid" $CONFIG_PATH)
 WPA_PASSPHRASE=$(jq --raw-output ".wpa_passphrase" $CONFIG_PATH)
 CHANNEL=$(jq --raw-output ".channel" $CONFIG_PATH)
+COUNTRY=$(jq --raw-output ".country" $CONFIG_PATH)
+BROADCASTSSID=$(jq --raw-output ".ignore_broadcast_ssid" $CONFIG_PATH)
 ADDRESS=$(jq --raw-output ".address" $CONFIG_PATH)
 NETMASK=$(jq --raw-output ".netmask" $CONFIG_PATH)
 BROADCAST=$(jq --raw-output ".broadcast" $CONFIG_PATH)
@@ -37,9 +39,11 @@ DHCP_END=$(jq --raw-output ".dhcp_end" $CONFIG_PATH)
 DHCP_DNS=$(jq --raw-output ".dhcp_dns" $CONFIG_PATH)
 DHCP_SUBNET=$(jq --raw-output ".dhcp_subnet" $CONFIG_PATH)
 DHCP_ROUTER=$(jq --raw-output ".dhcp_router" $CONFIG_PATH)
+DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
+DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
 
 # Enforces required env variables
-required_vars=(SSID WPA_PASSPHRASE CHANNEL ADDRESS NETMASK BROADCAST)
+required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
 for required_var in "${required_vars[@]}"; do
     if [[ -z ${!required_var} ]]; then
         echo >&2 "Error: $required_var env variable not set."
@@ -101,6 +105,8 @@ echo "Setup hostapd ..."
 echo "ssid=${SSID}" >> ${HCONFIG}
 echo "wpa_passphrase=${WPA_PASSPHRASE}" >> ${HCONFIG}
 echo "channel=${CHANNEL}" >> ${HCONFIG}
+echo "country_code=${COUNTRY}" >> ${HCONFIG}
+echo "ignore_broadcast_ssid=${BROADCASTSSID}" >> ${HCONFIG}
 echo "interface=${INTERFACE}" >> ${HCONFIG}
 echo "" >> ${HCONFIG}
 
@@ -125,19 +131,21 @@ if test ${DHCP_SERVER} = true; then
     UCONFIG="/etc/udhcpd.conf"
 
     echo "Setup udhcpd ..."
-    echo "interface    ${INTERFACE}"     >> ${UCONFIG}
-    echo "start        ${DHCP_START}"    >> ${UCONFIG}
-    echo "end          ${DHCP_END}"      >> ${UCONFIG}
-    echo "opt dns      ${DHCP_DNS}"      >> ${UCONFIG}
-    echo "opt subnet   ${DHCP_SUBNET}"   >> ${UCONFIG}
-    echo "opt router   ${DHCP_ROUTER}"   >> ${UCONFIG}
-    echo ""                              >> ${UCONFIG}
+    echo "interface      ${INTERFACE}"     >> ${UCONFIG}
+    echo "start          ${DHCP_START}"    >> ${UCONFIG}
+    echo "end            ${DHCP_END}"      >> ${UCONFIG}
+    echo "opt dns        ${DHCP_DNS}"      >> ${UCONFIG}
+    echo "opt subnet     ${DHCP_SUBNET}"   >> ${UCONFIG}
+    echo "opt router     ${DHCP_ROUTER}"   >> ${UCONFIG}
+    echo "option domain  ${DHCP_DOMAIN}"   >> ${UCONFIG}
+    echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
+    echo ""                                >> ${UCONFIG}
 
     echo "Starting DHCP server..."
     udhcpd -f &
 fi
 
-sleep 1
+sleep 5
 
 echo "Starting HostAP daemon ..."
 hostapd ${HCONFIG} &
