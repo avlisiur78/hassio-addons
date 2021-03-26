@@ -7,6 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Add env
 ENV LANG C.UTF-8
 
+RUN echo -e "http://nl.alpinelinux.org/alpine/v3.13/main\nhttp://nl.alpinelinux.org/alpine/v3.13/community" > /etc/apk/repositories
 # install pkgs
 RUN apk update
 RUN apk add --no-cache jq
