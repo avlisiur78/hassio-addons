@@ -1,7 +1,7 @@
 {
     "name": "RPi RF Receiver",
     "version": "1.5",
-    "slug": "rfreceiver",
+    "slug": "rf_receiver",
     "description": "RPi RF Receiver Script",
     "url": "https://github.com/fryguy04/hassio-addons",
     "startup": "application",
