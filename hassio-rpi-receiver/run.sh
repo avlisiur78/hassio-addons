@@ -28,4 +28,4 @@ then
     fi
     pip install -U ${requirements}
 fi
-python ${code} 
+python3 ${code} 
