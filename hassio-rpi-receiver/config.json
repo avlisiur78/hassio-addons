@@ -3,7 +3,7 @@
     "version": "1.5",
     "slug": "rf_receiver",
     "description": "RPi RF Receiver Script",
-    "url": "https://github.com/fryguy04/hassio-addons",
+    "url": "https://github.com/avlisiur78/hassio-addons",
     "startup": "application",
     "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
     "boot": "auto",
