@@ -36,7 +36,7 @@ RUN pip3 --no-cache-dir install --upgrade pycrypto
 # RUN pip install -U pip 
 # RUN pip install -U virtualenv
 RUN pip3 install -U virtualenv
-RUN pip3 install -U pip 
+RUN pip3 install -U pip3
 
 
 # Copy data for add-on
