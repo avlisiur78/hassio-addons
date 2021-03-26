@@ -10,7 +10,7 @@ PYTHON=$(which python3)
 
 if [ "${py3}" == "true" ];
 then
-    PYTHON=$(which python2)
+    PYTHON=$(which python3)
 fi
 
 if [ -n "$requirements" ];
