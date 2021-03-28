@@ -1,0 +1,28 @@
+{
+    "name": "RPi-RF based on nexus433 project",
+    "version": "1.0",
+    "slug": "rpi_rf_nexus433",
+    "description": "RPi-RF based on nexus433 project",
+    "startup": "application",
+    "arch": [
+      "armv7"
+    ],
+    "boot": "auto",
+    "gpio": true,
+    "devicetree": true,
+    "devices": [
+      "/dev/gpiochip0:/dev/gpiochip0:rwm"
+    ],
+    "privileged": [
+      "SYS_RAWIO"
+    ],
+    "services": [
+      "mqtt:need"
+    ],
+    "options": {
+        "gpio_pin": 27
+    },
+    "schema": {
+      "gpio_pin": "int(2,27)"
+    }
+} 
