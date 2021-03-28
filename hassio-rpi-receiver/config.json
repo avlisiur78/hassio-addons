@@ -14,7 +14,7 @@
   "gpio": "true",
   "apparmor": "false",
   "map": [],
-  "image": "psallandre/hassio-rpi-rf-receiver-{arch}",
+  "image": "avlisiur78/hassio-rpi-rf-receiver-{arch}",
   "options": {
     "log_level": "info",
     "gpio": 27,
