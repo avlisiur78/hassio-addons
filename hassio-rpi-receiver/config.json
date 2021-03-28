@@ -1,6 +1,6 @@
 {
     "name": "RPi RF-Receiver",
-    "version": "2.0",
+    "version": "2.1",
     "slug": "rf_receiver",
     "description": "RPi RF-Receiver Script",
     "startup": "application",
@@ -11,7 +11,7 @@
       "i386"
     ],
     "boot": "auto",
-    "devices": ["/dev/mem:/dev/mem:rw"],
+    "devices": ["/dev/mem"],
     "privileged": ["SYS_RAWIO"],
     "gpio": "true",
     "apparmor": "false",
