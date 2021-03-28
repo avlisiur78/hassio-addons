@@ -1,6 +1,6 @@
 {
   "name": "RPi RF-Receiver",
-  "version": "2.0",
+  "version": "2.1",
   "slug": "rf_receiver",
   "description": "RPi RF-Receiver Script",
   "url": "https://github.com/avlisiur78/hassio-addons",
