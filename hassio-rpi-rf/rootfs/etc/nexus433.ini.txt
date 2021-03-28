@@ -1,0 +1,15 @@
+[mqtt]
+; MQTT host address
+host=$MQTT_HOST
+; MQTT port
+port=1883
+; MQTT user name
+user=$MQTT_USER
+; MQTT password
+password=$MQTT_PASSWORD
+
+[receiver]
+; pin number
+; for physical pin #11 on Raspberry Pi connector
+: use 17 for Raspberry Pi or 1 for Orange Pi
+pin=$GPIO_PIN
