@@ -22,7 +22,7 @@ sudo sed -e "s/\$GPIO_PIN/$GPIO_PIN/" -e "s/\$MQTT_HOST/$MQTT_HOST/" -e "s/\$MQT
 
 #sudo gpioinfo
 
-echo "Starting nexus433:"
+echo "Starting RPi-RF based on nexus433 project:"
 sudo /usr/local/bin/nexus433/nexus433 --verbose -g /etc/nexus433_addon.ini
 
 # sudo systemctl enable nexus433
