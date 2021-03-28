@@ -2,19 +2,30 @@
 
 This addon is made to make the rpi-rf receiver script run in background of you hassio
 
-1. Install the addon (it take 5-10 minutes to intall).
+- Install the addon
+- Disable `Protection mode` in the addon Info page
+- Edit Configuration if needed ( MQTT settings are auto discovered)
+- Start the addon
+- Add this sensor to read the codes in your hassio:
+  ```yaml
+  sensor:
+    - platform: mqtt
+      state_topic: "sensors/rf/receiver"
+      name: "Pretty Name"
+  ```
 
-2. Copy "rpi-rf_receive.py" in the "share" share of your hass.io.
+## Infos
 
-3. Edit "rpi-rf_receive.py" adding your mosquitto address, port, user and  password. 
+- This addon has `full_access` setting to allow access to `/proc/device-tree/system/linux,revision`
+  - Otherwise RPi.GPIO will issue error `This module can only be run on a Raspberry Pi!` on a Raspberry Pi 4
+  - Settings in config.json like "devices", "privileged", or "devicetree" seem to not have any effect on the issue
+- **Thus it is necessary to disable `Protection mode` in the addon Info page**
+- `RPi.GPIO` version must be >=0.7.1a2 to fix compilation issue
+  - other solution: `RUN env CFLAGS="-fcommon" pip3 install -U RPi.GPIO`
 
-4. Start the addon 
+## Contributors
 
-5. Add this sensor to read the codes in your hassio:
-
-sensor:
-  - platform: mqtt
-  
-    state_topic: "sensors/rf/receiver"
-    
-    name: "RF Receiver"
+- https://github.com/pantomax/hassio-addons
+- https://github.com/masci1234/hassio-addons
+- https://github.com/CarstenHess/hassio-addons
+- https://github.com/psallandre/hassio-addons
