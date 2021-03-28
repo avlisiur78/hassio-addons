@@ -20,7 +20,7 @@
       "mqtt:need"
     ],
     "options": {
-        "gpio_pin": 27
+        "gpio_pin": 17
     },
     "schema": {
       "gpio_pin": "int(2,27)"
