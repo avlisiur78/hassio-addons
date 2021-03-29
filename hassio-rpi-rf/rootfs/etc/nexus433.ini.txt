@@ -13,3 +13,6 @@ password=$MQTT_PASSWORD
 ; for physical pin #11 on Raspberry Pi connector
 : use 17 for Raspberry Pi or 1 for Orange Pi
 pin=$GPIO_PIN
+
+[transmitter]
+discovery=$DISCOVERY
