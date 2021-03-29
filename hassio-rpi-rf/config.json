@@ -20,7 +20,7 @@
       "mqtt:need"
     ],
     "options": {
-        "gpio_pin": 17
+        "gpio_pin": 17,
         "discovery": "false"
     },
     "schema": {
