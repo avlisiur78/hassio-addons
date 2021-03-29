@@ -12,10 +12,11 @@ DISCOVERY=$(jq --raw-output ".discovery" $CONFIG_PATH)
 #echo "config ($CONFIG_PATH):"
 #cat $CONFIG_PATH
 #echo
-#echo "GPIO_PIN: $GPIO_PIN"
-#echo "MQTT_HOST=$MQTT_HOST"
+echo "GPIO_PIN: $GPIO_PIN"
+echo "MQTT_HOST=$MQTT_HOST"
 #echo "MQTT_USER=$MQTT_USER"
 #echo "MQTT_PASSWORD=$MQTT_PASSWORD"
+echo "DISCOVERY=$DISCOVERY"
 
 #put pin & mqtt-values in the ini-file template
 sudo sed -e "s/\$DISCOVERY/$DISCOVERY/" -e "s/\$GPIO_PIN/$GPIO_PIN/" -e "s/\$MQTT_HOST/$MQTT_HOST/" -e "s/\$MQTT_USER/$MQTT_USER/" -e "s/\$MQTT_PASSWORD/$MQTT_PASSWORD/" /etc/nexus433.ini.txt > /etc/nexus433_addon.ini
