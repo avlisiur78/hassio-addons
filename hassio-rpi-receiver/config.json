@@ -1,0 +1,37 @@
+{
+  "name": "RF Receiver",
+  "version": "2.6",
+  "slug": "rfreceiver",
+  "description": "433 MHz RF Receiver - For Jetson Nano",
+  "url": "https://github.com/psallandre/hassio-addons",
+  "startup": "application",
+  "arch": ["aarch64"],
+  "boot": "auto",
+  "hassio_api": true,
+  "services": ["mqtt:need"],
+  "devices": ["/dev/mem:/dev/mem:rw"],
+  "privileged": ["SYS_RAWIO"],
+  "full_access": true,
+  "gpio": "true",
+  "apparmor": "false",
+  "options": {
+    "log_level": "info",
+    "gpio": 27,
+    "valid_codes": [],
+    "mqtt": {},
+    "mqtt_test": false
+  },
+  "schema": {
+    "log_level": "list(trace|debug|info|notice|warning|error|fatal)",
+    "gpio": "int",
+    "valid_codes": ["int"],
+    "mqtt": {
+      "host": "str?",
+      "port": "str?",
+      "user": "str?",
+      "password": "str?",
+      "mqtt_test": "bool"
+    }
+  },
+  "map": []
+}
