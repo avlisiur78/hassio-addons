@@ -1,0 +1,41 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck disable=SC2034
+__BASHIO_LOG_TIMESTAMP='%F %T'
+
+bashio::log.info "Starting..."
+
+# https://github.com/zigbee2mqtt/hassio-zigbee2mqtt/blob/master/common/rootfs/etc/cont-init.d/zigbee2mqtt.sh
+MQTT_HOST=$(bashio::config 'mqtt.host')
+MQTT_PORT=$(bashio::config 'mqtt.port')
+MQTT_USER=$(bashio::config 'mqtt.user')
+MQTT_PASSWORD=$(bashio::config 'mqtt.password')
+
+if ! bashio::services.available "mqtt" && ! bashio::config.exists 'mqtt.host'; then
+    bashio::exit.nok "No internal MQTT service found and no MQTT host defined. Please install Mosquitto broker or specify your own."
+else
+    if ! bashio::config.exists 'mqtt.host' || ! bashio::config.exists 'mqtt.port'; then
+        bashio::log.info "MQTT host/port settings not configured, trying to auto-discover..."
+        MQTT_HOST=$(bashio::services mqtt "host")
+        MQTT_PORT=$(bashio::services mqtt "port")
+    fi
+    bashio::log.info "MQTT_HOST='$MQTT_HOST'"
+    bashio::log.info "MQTT_PORT='$MQTT_PORT'"
+    if ! bashio::config.exists 'mqtt.user'; then
+        bashio::log.info "MQTT credentials not configured, trying to auto-discover..."
+        MQTT_USER=$(bashio::services mqtt "username")
+        MQTT_PASSWORD=$(bashio::services mqtt "password")
+    fi
+    bashio::log.info "MQTT_USER='$MQTT_USER'"
+fi
+if [[ -z "$MQTT_HOST" ]] || [[ -z "$MQTT_PORT" ]] || [[ -z "$MQTT_USER" ]] || [[ -z "$MQTT_PASSWORD" ]]; then
+    bashio::exit.nok "MQTT not configured. Please install Mosquitto broker or specify your own."
+fi
+
+LOG_LEVEL="$(bashio::config 'log_level')"
+GPIO="$(bashio::config 'gpio')"
+VALID_CODES="$(bashio::config 'valid_codes')"
+VALID_CODES=$(echo -n $VALID_CODES | tr '\n' ' ')
+MQTT_TEST="$(bashio::config 'mqtt_test')"
+
+bashio::log.info "Launching command: python3 /rpi-rf_receive.py --log-level $LOG_LEVEL --valid-codes $VALID_CODES -g $GPIO --mqtt-host $MQTT_HOST --mqtt-port $MQTT_PORT --mqtt-user $MQTT_USER --mqtt-password XXXX --mqtt-test $MQTT_TEST"
+python3 /usr/bin/rpi-rf-receive.py --log-level $LOG_LEVEL --valid-codes $VALID_CODES -g $GPIO --mqtt-host $MQTT_HOST --mqtt-port $MQTT_PORT --mqtt-user $MQTT_USER --mqtt-password $MQTT_PASSWORD --mqtt-test $MQTT_TEST
