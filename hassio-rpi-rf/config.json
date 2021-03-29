@@ -21,8 +21,10 @@
     ],
     "options": {
         "gpio_pin": 17
+        "discovery": "false"
     },
     "schema": {
       "gpio_pin": "int(2,27)"
+      "discovery": "str"
     }
 } 
