@@ -1,3 +1,20 @@
-# rpi-rf based on nexus433
-Home Assistant add-on rpi-rf based on the nexus433 service that can read 433Mhz based temperature sensors and post them to MQTT
- See more here: https://github.com/aquaticus/nexus433
+# RPI RF Receiver
+
+This addon is made to make the rpi-rf receiver script run in background of you hassio
+
+1. Install the addon (it take 5-10 minutes to intall).
+
+2. Copy "rpi-rf_receive.py" in the "share" share of your hass.io.
+
+3. Edit "rpi-rf_receive.py" adding your mosquitto address, port, user and  password. 
+
+4. Start the addon 
+
+5. Add this sensor to read the codes in your hassio:
+
+sensor:
+  - platform: mqtt
+  
+    state_topic: "sensors/rf/receiver"
+    
+    name: "RF Receiver"
