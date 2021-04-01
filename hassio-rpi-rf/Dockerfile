@@ -29,7 +29,7 @@ RUN apk add --no-cache mosquitto-libs
 RUN pip3 install wheel
 RUN pip3 install pyaes
 RUN pip3 install pycrypto
-# RUN pip3 install -U virtualenv
+RUN pip3 install -U virtualenv
 RUN pip3 install -U "RPi.GPIO>=0.7.1a2"
 RUN pip3 install -U rpi-rf
 
