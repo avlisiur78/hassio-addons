@@ -26,6 +26,6 @@ then
        virtualenv -p ${PYTHON} .
        . bin/activate
     fi
-    pip install -U ${requirements}
+    pip3 install -U ${requirements}
 fi
-python ${code} 
+python3 ${code} 
