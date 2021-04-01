@@ -1,30 +1,24 @@
 {
-    "name": "RPi-RF based on nexus433 project",
-    "version": "1.2",
-    "slug": "rpi_rf_nexus433",
-    "description": "RPi-RF based on nexus433 project",
+    "name": "RPi RF Receiver",
+    "version": "1.63",
+    "slug": "rfreceiver",
+    "description": "RPi RF Receiver Script",
     "startup": "application",
-    "arch": [
-      "armv7"
-    ],
     "boot": "auto",
-    "gpio": true,
-    "devicetree": true,
-    "devices": [
-      "/dev/gpiochip0:/dev/gpiochip0:rwm"
-    ],
-    "privileged": [
-      "SYS_RAWIO"
-    ],
-    "services": [
-      "mqtt:need"
-    ],
+    "devices": ["/dev/mem:/dev/mem:rw"],
+    "privileged": ["SYS_RAWIO"],
+    "gpio": "true",
+    "apparmor": "false",
+    "ports": {"5055/tcp": null},
     "options": {
-        "gpio_pin": 17,
-        "discovery": "false"
-    },
-    "schema": {
-      "gpio_pin": "int(2,27)",
-      "discovery": "str"
-    }
+  "code": "/share/rpi-rf_receive.py",
+  "requirements": [
+    "rpi-rf"
+  ],
+  "clean": true
+},
+    "schema": {"code": "str",
+	       "requirements": ["str"],
+	       "clean": "bool?"},
+    "map": ["share"]
 } 
