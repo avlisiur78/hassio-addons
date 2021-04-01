@@ -7,7 +7,7 @@ import time
 import logging
 import io, os, datetime, shutil
 
-mosquitto_address = "192.168.1.100"
+mosquitto_address = "core-mosquitto"
 mosquitto_port = "1883"
 mosquitto_user = "homeassistant"
 mosquitto_password = "REDACTED" 
