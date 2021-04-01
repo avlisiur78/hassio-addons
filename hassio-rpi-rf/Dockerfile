@@ -6,6 +6,9 @@ ENV LANG C.UTF-8
 RUN apk add --no-cache jq
 RUN apk add --no-cache clang
 RUN apk add --no-cache build-base
+RUN apk add --no-cache python3
+RUN apk add --no-cache python3-dev
+RUN apk add --no-cache py3-pip
 RUN apk add --no-cache libgcc
 RUN apk add --no-cache gcc-gnat
 RUN apk add --no-cache libgc++
@@ -17,14 +20,11 @@ RUN apk add --no-cache mosquitto
 RUN apk add --no-cache mosquitto-dev
 RUN apk add --no-cache mosquitto-clients
 RUN apk add --no-cache mosquitto-libs
-RUN pip install pyaes
-RUN pip install pycrypto
-RUN apk add --no-cache \
-    	jq \
-	python3 \
-	python3-dev\
- && pip3 install -U pip \
- && pip3 install -U virtualenv
+RUN pip3 install wheel
+RUN pip3 install pyaes
+RUN pip3 install pycrypto
+RUN pip3 install -U virtualenv
+
 
 # Copy data for add-on
 COPY run.sh /
