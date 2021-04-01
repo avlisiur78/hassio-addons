@@ -15,14 +15,14 @@
     "gpio": "true",
     "apparmor": "false",
     "options": {
-    "code": "/share/rpi-rf_receive.py",
-    "requirements": ["rpi-rf"],
-    "clean": true
-  },
-  "schema": {
-    "code": "str",
-    "requirements": ["str"],
-    "clean": "bool?"
-  },
-  "map": ["share"]
+      "code": "/share/rpi-rf_receive.py",
+      "requirements": ["rpi-rf"],
+      "clean": true
+    },
+    "schema": {
+      "code": "str",
+      "requirements": ["str"],
+      "clean": "bool?"
+    },
+    "map": ["share"]
 }
