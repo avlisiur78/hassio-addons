@@ -5,7 +5,7 @@
     "description": "RPi RF Receiver Script",
     "startup": "application",
     "boot": "auto",
-    "devices": ["/dev/mem:/dev/mem:rw"],
+    "devices": ["/dev/mem"],
     "privileged": ["SYS_RAWIO"],
     "gpio": "true",
     "apparmor": "false",
