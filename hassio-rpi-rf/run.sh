@@ -29,5 +29,3 @@ then
     pip3 install -U ${requirements}
 fi
 python3 ${code} 
-
-sleep 120
