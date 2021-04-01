@@ -3,7 +3,7 @@
     "version": "1.63",
     "slug": "rfreceiver",
     "description": "RPi RF Receiver Script",
-    "arch": ["armhf", "armv7"],
+    "arch": ["armv7"],
     "startup": "application",
     "boot": "auto",
     "devices": ["/dev/mem"],
