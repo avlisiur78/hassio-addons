@@ -7,24 +7,26 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Add env
 ENV LANG C.UTF-8
 
-RUN apk add --no-cache build-base
-RUN apk add --no-cache python3
-RUN apk add --no-cache python3-dev
-RUN apk add --no-cache py3-pip
-RUN apk add --no-cache g++
-
-RUN apk add --no-cache jq
-RUN apk add --no-cache clang
-RUN apk add --no-cache libgcc
-RUN apk add --no-cache gcc-gnat
-RUN apk add --no-cache libgc++
-RUN apk add --no-cache make
-RUN apk add --no-cache libffi-dev
-RUN apk add --no-cache openssl-dev
-RUN apk add --no-cache mosquitto
-RUN apk add --no-cache mosquitto-dev
-RUN apk add --no-cache mosquitto-clients
-RUN apk add --no-cache mosquitto-libs
+RUN apk add --no-cache coreutils \
+        wget \
+        nano \
+        jq \
+        clang \
+        build-base \
+        libgcc \
+        libgc++ \
+        gcc-gnat \
+        g++ \
+        make \
+        libffi-dev \
+        openssl-dev \
+        mosquitto \
+        mosquitto-dev \
+        mosquitto-libs \
+        mosquitto-clients \
+        python3 \
+        python3-dev \
+        py3-pip
 
 RUN pip3 install wheel
 RUN pip3 install pyaes
@@ -38,3 +40,29 @@ COPY run.sh /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ] 
+
+# Build arguments
+ARG BUILD_ARCH
+ARG BUILD_DATE
+ARG BUILD_REF
+ARG BUILD_VERSION
+
+# Labels
+LABEL \
+    io.hass.name="RF Receiver" \
+    io.hass.description="433 MHz RF Receiver" \
+    io.hass.arch="${BUILD_ARCH}" \
+    io.hass.type="addon" \
+    io.hass.version=${BUILD_VERSION} \
+    maintainer="" \
+    org.opencontainers.image.title="RF Receiver" \
+    org.opencontainers.image.description="433 MHz RF Receiver" \
+    org.opencontainers.image.vendor="" \
+    org.opencontainers.image.authors="" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.url="" \
+    org.opencontainers.image.source="https://github.com/avlisiur78/hassio-addons" \
+    org.opencontainers.image.documentation="https://github.com/avlisiur78/hassio-addons/blob/master/hassio-rpi-rf/README.md" \
+    org.opencontainers.image.created=${BUILD_DATE} \
+    org.opencontainers.image.revision=${BUILD_REF} \
+    org.opencontainers.image.version=${BUILD_VERSION}
