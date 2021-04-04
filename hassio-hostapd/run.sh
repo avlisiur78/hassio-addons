@@ -41,7 +41,7 @@ DHCP_SUBNET=$(jq --raw-output ".dhcp_subnet" $CONFIG_PATH)
 DHCP_ROUTER=$(jq --raw-output ".dhcp_router" $CONFIG_PATH)
 DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
 DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
-DHCP_STATIC=$(jq --raw-output ".dhcp_static" $CINFIG_PATCH)
+DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
 # Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
@@ -141,19 +141,13 @@ if test ${DHCP_SERVER} = true; then
     echo "option domain  ${DHCP_DOMAIN}"   >> ${UCONFIG}
     echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
     
-   # Create static_lease
-    for static_lease in $($CONFIG_PATH 'static_lease|keys'); do
-        IP=$($CONFIG_PATH "static_lease[${host}].ip")
-        MAC=$($CONFIG_PATH "static_lease[${host}].mac")
-    
-       {
-            echo "static_lease ${NAME} {"
-            echo "  hardware ethernet ${MAC};"
-            echo "  fixed-address ${IP};"
-            echo "}"
-        } >> "${CONFIG}"
-    done 
-        
+# Create static_lease
+#if [ ${#DHCP_STATIC} -ge 1 ]; then
+#    for static in "${DHCP_STATIC[@]}"; do
+#        echo "static_lease $static"$'\n' >> /hostapd.allow
+#    done
+#fi
+#----------------
     echo ""                                >> ${UCONFIG}
 
     echo "Starting DHCP server..."
