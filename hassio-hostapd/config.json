@@ -54,8 +54,7 @@
     "dhcp_router": "str",
     "dhcp_domain": "str",
     "dhcp_lease": "int",
-    "static_lease": [
-      {"name": "str", "mac": "str", "ip": "str"}
+    "static_lease": ["str"]
     ]
   }
 } 
