@@ -22,6 +22,8 @@ pip3 install -U wheel
 pip3 install -U "RPi.GPIO>=0.7.1a2"
 pip3 install -U rpi-rf
 
+# Copy script for receive 
+COPY rpi-rf_receive.py /share/
 
 # Copy data for add-on
 COPY run.sh /
