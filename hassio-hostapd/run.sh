@@ -41,6 +41,7 @@ DHCP_SUBNET=$(jq --raw-output ".dhcp_subnet" $CONFIG_PATH)
 DHCP_ROUTER=$(jq --raw-output ".dhcp_router" $CONFIG_PATH)
 DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
 DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
+DHCP_STATIC=$(jq --raw-output ".dhcp_static" $CINFIG_PATCH)
 
 # Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
