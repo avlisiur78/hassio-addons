@@ -33,7 +33,7 @@
     "dhcp_router": "192.168.2.1",
     "dhcp_domain": "local",
     "dhcp_lease": "864000",
-    "static_lease":[]
+    "dhcp_static_lease":[]
   },
   "schema": {
     "ssid": "str",
@@ -54,7 +54,6 @@
     "dhcp_router": "str",
     "dhcp_domain": "str",
     "dhcp_lease": "int",
-    "static_lease": ["str"]
-    ]
+    "dhcp_static_lease": ["str"]
   }
 } 
