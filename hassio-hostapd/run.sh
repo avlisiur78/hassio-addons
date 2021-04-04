@@ -139,6 +139,20 @@ if test ${DHCP_SERVER} = true; then
     echo "opt router     ${DHCP_ROUTER}"   >> ${UCONFIG}
     echo "option domain  ${DHCP_DOMAIN}"   >> ${UCONFIG}
     echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
+    
+   # Create static_lease
+    for static_lease in $($CONFIG_PATH 'static_lease|keys'); do
+        IP=$($CONFIG_PATH "static_lease[${host}].ip")
+        MAC=$($CONFIG_PATH "static_lease[${host}].mac")
+    
+       {
+            echo "static_lease ${NAME} {"
+            echo "  hardware ethernet ${MAC};"
+            echo "  fixed-address ${IP};"
+            echo "}"
+        } >> "${CONFIG}"
+    done 
+        
     echo ""                                >> ${UCONFIG}
 
     echo "Starting DHCP server..."
