@@ -32,7 +32,8 @@
     "dhcp_subnet": "255.255.255.0",
     "dhcp_router": "192.168.2.1",
     "dhcp_domain": "local",
-    "dhcp_lease": "864000"
+    "dhcp_lease": "864000",
+    "static_lease":[]
   },
   "schema": {
     "ssid": "str",
@@ -53,5 +54,11 @@
     "dhcp_router": "str",
     "dhcp_domain": "str",
     "dhcp_lease": "int"
+        "hosts": [
+      {
+        "mac": "str",
+        "ip": "str"
+      }
+    ]
   }
 } 
