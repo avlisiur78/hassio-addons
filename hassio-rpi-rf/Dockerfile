@@ -32,4 +32,4 @@ CMD [ "/run.sh" ]
 # Labels
 LABEL \
     org.opencontainers.image.title="RF Receiver" \
-    org.opencontainers.image.description="433 MHz RF Receiver" \
+    org.opencontainers.image.description="433 MHz RF Receiver" 
