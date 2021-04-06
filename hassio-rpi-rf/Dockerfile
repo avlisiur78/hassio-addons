@@ -22,16 +22,10 @@ RUN pip3 install -U wheel
 RUN pip3 install -U "RPi.GPIO>=0.7.1a2"
 RUN pip3 install -U rpi-rf
 
-# Copy script for receive 
-COPY rpi-rf_receive.py /share/
-
 # Copy data for add-on
 COPY run.sh /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ] 
 
-# Labels
-#LABEL \
-#    org.opencontainers.image.title="RF Receiver" \
-#    org.opencontainers.image.description="433 MHz RF Receiver" 
+CMD [ "cp rpi-rf_receive.py /share/" ]
