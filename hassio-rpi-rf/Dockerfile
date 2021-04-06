@@ -27,5 +27,3 @@ COPY run.sh /
 RUN chmod a+x /run.sh
 
 CMD [ "/run.sh" ] 
-
-CMD [ "cp -f rpi-rf_receive.py /share/" ]
