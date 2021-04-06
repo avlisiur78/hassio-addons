@@ -13,19 +13,19 @@ then
     PYTHON=$(which python3)
 fi
 
-if [ -n "$requirements" ];
-then
-    if [ "$clean" == "true" ];
-    then
-	rm -rf /data/venv/
-    fi
-    if [ ! -f "/data/venv/bin/activate" ];
-    then
-       mkdir -p /data/venv/
-       cd /data/venv
-       virtualenv -p ${PYTHON} .
-       . bin/activate
-    fi
-    pip3 install -U ${requirements}
-fi
+#if [ -n "$requirements" ];
+#then
+#    if [ "$clean" == "true" ];
+#    then
+#	rm -rf /data/venv/
+#    fi
+#    if [ ! -f "/data/venv/bin/activate" ];
+#    then
+#       mkdir -p /data/venv/
+#       cd /data/venv
+#       virtualenv -p ${PYTHON} .
+#       . bin/activate
+#    fi
+#    pip3 install -U ${requirements}
+#fi
 python3 ${code} 
