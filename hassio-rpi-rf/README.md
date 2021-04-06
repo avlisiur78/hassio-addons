@@ -10,3 +10,4 @@ This addon is made to make the rpi-rf receiver script run in background of you h
 
 3. Start the addon 
 
+This add-on has no integration with mosquitto, in the log you will see the RF codes, to get the codes for your devices, you shoud test very close to your RF Board to get a good data.
