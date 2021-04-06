@@ -5,7 +5,7 @@
     "description": "RPi RF Receiver",
     "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
     "url": "https://github.com/avlisiur78/hassio-addons/tree/master/hassio-rpi-rf",
-    "startup": "application",
+    "startup": "system",
     "boot": "auto",
     "hassio_api": true,
     "homeassistant_api": true,
