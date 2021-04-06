@@ -6,7 +6,7 @@ This addon is made to make the rpi-rf receiver script run in background of you h
 
     1.1 If for some reason terminates saying "failed, check supervisor log", please restart hass server and it should be working.
 
-2. Copy "rpi-rf_receive.py" in the "share" share of your hass.io.
+2. Copy "rpi-rf_receive.py" in the "share" share of your hass.io and if need ajust the script.
 
 3. Start the addon 
 
