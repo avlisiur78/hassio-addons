@@ -32,6 +32,6 @@ RUN chmod a+x /run.sh
 CMD [ "/run.sh" ] 
 
 # Labels
-LABEL \
-    org.opencontainers.image.title="RF Receiver" \
-    org.opencontainers.image.description="433 MHz RF Receiver" 
+#LABEL \
+#    org.opencontainers.image.title="RF Receiver" \
+#    org.opencontainers.image.description="433 MHz RF Receiver" 
