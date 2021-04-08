@@ -145,7 +145,7 @@ if test ${DHCP_SERVER} = true; then
 # ===================
 #for dhcp_static in $(jq --raw-output 'dhcp_static_leases|keys' $CONFIG_PATH ); do
 #for dhcp_static in $(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH); do
-for dhcp_static in $($DHCP_STATIC $CONFIG_PATH); do
+for dhcp_static in $($DHCP_STATIC " " $CONFIG_PATH); do
     NAME=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].name" $CONFIG_PATH)
     MAC=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].mac" $CONFIG_PATH)
     IP=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].ip" $CONFIG_PATH)
