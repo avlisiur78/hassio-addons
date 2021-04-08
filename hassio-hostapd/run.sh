@@ -143,10 +143,14 @@ if test ${DHCP_SERVER} = true; then
     
 # Create dhcp_static_leases
 # ===================
-for dhcp_static_lease in $( $CONFIG_PATH 'dhcp_static_leases|keys'); do
-    IP=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].ip")
-    MAC=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].mac")
-    NAME=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].name")
+for dhcp_static_lease in $(jq --raw-output "dhcp_static_leases|keys" $CONFIG_PATH ); do
+    NAME=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].name" $CONFIG_PATH)
+    MAC=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].mac" $CONFIG_PATH)
+    IP=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].ip" $CONFIG_PATH)
+    
+    #IP=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].ip")
+    #MAC=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].mac")
+    #NAME=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].name")
 
     echo "# ${NAME}" >> ${UCONFIG}
     echo "static_lease ${MAC} ${IP}" >> ${UCONFIG}
