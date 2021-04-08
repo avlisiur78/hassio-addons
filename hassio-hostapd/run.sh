@@ -148,13 +148,16 @@ for dhcp_static_lease in $( $CONFIG_PATH 'dhcp_static_leases|keys'); do
     MAC=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].mac")
     NAME=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].name")
 
-    {
-        echo "dhcp_static_lease ${NAME} {"
-        echo "  hardware ethernet ${MAC};"
-        echo "  fixed-address ${IP};"
-        echo "  option dhcp_static_lease-name \"${NAME}\";"
-        echo "}"
-    } >> "${UCONFIG}"
+    echo "# ${NAME}" >> ${UCONFIG}
+    echo "static_lease ${MAC} ${IP}" >> ${UCONFIG}
+        
+    #{
+    #    echo "dhcp_static_lease ${NAME} {"
+    #    echo "  hardware ethernet ${MAC};"
+    #    echo "  fixed-address ${IP};"
+    #    echo "  option dhcp_static_lease-name \"${NAME}\";"
+    #    echo "}"
+    #} >> "${UCONFIG}"
 done
 # ===================
 
