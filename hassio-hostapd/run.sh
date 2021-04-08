@@ -41,7 +41,7 @@ DHCP_SUBNET=$(jq --raw-output ".dhcp_subnet" $CONFIG_PATH)
 DHCP_ROUTER=$(jq --raw-output ".dhcp_router" $CONFIG_PATH)
 DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
 DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
-#DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
+DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
 # Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
@@ -143,7 +143,8 @@ if test ${DHCP_SERVER} = true; then
     
 # Create dhcp_static_leases
 # ===================
-for dhcp_static_lease in $(jq --raw-output "dhcp_static_leases|keys" $CONFIG_PATH ); do
+#for dhcp_static in $(jq --raw-output 'dhcp_static_leases|keys' $CONFIG_PATH ); do
+for dhcp_static in $(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH); do
     NAME=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].name" $CONFIG_PATH)
     MAC=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].mac" $CONFIG_PATH)
     IP=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].ip" $CONFIG_PATH)
