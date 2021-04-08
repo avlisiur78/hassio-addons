@@ -56,8 +56,8 @@
     "dhcp_lease": "int",
     "dhcp_static_lease": [
       {
-        "mac": "str",
         "name": "str",
+        "mac": "str",
         "ip": "str"
       }
     ]
