@@ -142,13 +142,18 @@ if test ${DHCP_SERVER} = true; then
     echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
     
 # Create static_lease
-#if [ ${#DHCP_STATIC} -ge 1 ]; then
-#    for static in "${DHCP_STATIC[@]}"; do
-#        echo "static_lease $static"$'\n' >> /hostapd.allow
-#    done
-#fi
-#----------------
-    echo ""                                >> ${UCONFIG}
+# ===================
+DHCP_STATIC=$(bashio::config 'DHCP_STATIC')
+for mac in ${DHCP_STATIC}; do
+        for ip in $(jq --raw-output --exit-status "[.dhcp_static_lease[]|{(.ip):.mac}]|add.\"${mac}\" | select(. != null)" /data/options.json) ; do
+            dhcp_static_lease="${dhcp_static_lease} ${ip}"
+        done
+    done
+dhcp_static_lease="$(echo "${dhcp_static_lease}" | tr ' ' '\n' | sort | uniq)"
+# ===================
+
+    echo "static_lease  ${dhcp_static_lease}" >> ${UCONFIG}
+    echo ""                                   >> ${UCONFIG}
 
     echo "Starting DHCP server..."
     udhcpd -f &
