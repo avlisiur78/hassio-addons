@@ -54,6 +54,6 @@
     "dhcp_router": "str",
     "dhcp_domain": "str",
     "dhcp_lease": "int",
-    "dhcp_static_lease": ["str"]
+    "dhcp_static_lease": ["mac": "str", "ip": "srt"]
   }
 } 
