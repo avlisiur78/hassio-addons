@@ -144,7 +144,8 @@ if test ${DHCP_SERVER} = true; then
 # Create dhcp_static_leases
 # ===================
 #for dhcp_static in $(jq --raw-output 'dhcp_static_leases|keys' $CONFIG_PATH ); do
-for dhcp_static in $(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH); do
+#for dhcp_static in $(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH); do
+for dhcp_static in $($DHCP_STATIC $CONFIG_PATH); do
     NAME=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].name" $CONFIG_PATH)
     MAC=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].mac" $CONFIG_PATH)
     IP=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].ip" $CONFIG_PATH)
@@ -169,6 +170,7 @@ done
     #echo "static_lease  ${dhcp_static_lease}" >> ${UCONFIG}
     echo ""                                   >> ${UCONFIG}
 
+    echo $DHCP_STATIC
     echo "Starting DHCP server..."
     udhcpd -f &
 fi
