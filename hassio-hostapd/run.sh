@@ -41,7 +41,7 @@ DHCP_SUBNET=$(jq --raw-output ".dhcp_subnet" $CONFIG_PATH)
 DHCP_ROUTER=$(jq --raw-output ".dhcp_router" $CONFIG_PATH)
 DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
 DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
-DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
+#DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
 # Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
@@ -141,18 +141,24 @@ if test ${DHCP_SERVER} = true; then
     echo "option domain  ${DHCP_DOMAIN}"   >> ${UCONFIG}
     echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
     
-# Create static_lease
+# Create dhcp_static_leases
 # ===================
-DHCP_STATIC=$(bashio::config 'DHCP_STATIC')
-for mac in ${DHCP_STATIC}; do
-        for ip in $(jq --raw-output --exit-status "[.dhcp_static_lease[]|{(.ip):.mac}]|add.\"${mac}\" | select(. != null)" /data/options.json) ; do
-            dhcp_static_lease="${dhcp_static_lease} ${ip}"
-        done
-    done
-dhcp_static_lease="$(echo "${dhcp_static_lease}" | tr ' ' '\n' | sort | uniq)"
+for dhcp_static_lease in $( $CONFIG_PATH 'dhcp_static_leases|keys'); do
+    IP=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].ip")
+    MAC=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].mac")
+    NAME=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].name")
+
+    {
+        echo "dhcp_static_lease ${NAME} {"
+        echo "  hardware ethernet ${MAC};"
+        echo "  fixed-address ${IP};"
+        echo "  option dhcp_static_lease-name \"${NAME}\";"
+        echo "}"
+    } >> "${UCONFIG}"
+done
 # ===================
 
-    echo "static_lease  ${dhcp_static_lease}" >> ${UCONFIG}
+    #echo "static_lease  ${dhcp_static_lease}" >> ${UCONFIG}
     echo ""                                   >> ${UCONFIG}
 
     echo "Starting DHCP server..."
