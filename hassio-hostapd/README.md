@@ -37,9 +37,17 @@ The available configuration options are the following. Make sure to edit and aju
     "dhcp_router": "192.168.2.1",
     "dhcp_domain": "local",
     "dhcp_lease": "864000"
+    "dhcp_static_lease": []
 }
 
 ```
 When channel set to 0, it will automatically find the best channel. 
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
+
+For definition of static_lease please use this format:
+
+      - name: hostname
+        mac: '70:e9:76:22:41:ca'
+        ip: 192.168.2.175
+      
