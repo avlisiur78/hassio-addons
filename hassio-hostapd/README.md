@@ -45,7 +45,7 @@ When channel set to 0, it will automatically find the best channel.
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
 
-For definition of static_lease please use this format:
+For definition of `dhcp_static_lease` please use this format:
 
       - name: hostname
         mac: '70:e9:76:22:41:ca'
