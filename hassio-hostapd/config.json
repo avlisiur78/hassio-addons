@@ -33,6 +33,8 @@
     "dhcp_router": "192.168.2.1",
     "dhcp_domain": "local",
     "dhcp_lease": "864000",
+    "dhcp_routes_enable": false,
+    "dhcp_staticroutes": "",
     "dhcp_static_lease": []
   },
   "schema": {
@@ -54,6 +56,8 @@
     "dhcp_router": "str",
     "dhcp_domain": "str",
     "dhcp_lease": "int",
+    "dhcp_routes_enable": "bool",
+    "dhcp_staticroutes": "srt",
     "dhcp_static_lease": [
       {
         "name": "str",
