@@ -1,6 +1,6 @@
 # Changelog
 
-##
+## [1.1.0.3]
 ### Added
 - The option for static routes
 
