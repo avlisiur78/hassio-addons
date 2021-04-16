@@ -37,8 +37,8 @@ The available configuration options are the following. Make sure to edit and aju
     "dhcp_router": "192.168.2.1",
     "dhcp_domain": "local",
     "dhcp_lease": "864000"
-    "dhcp_dhcp_routes_enable": false
-    "dhcp_dhcp_staticroutes": ""
+    "dhcp_routes_enable": false
+    "dhcp_staticroutes": ""
     "dhcp_static_lease": []
 }
 
@@ -47,7 +47,7 @@ When channel set to 0, it will automatically find the best channel.
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
 
-The definition of `staticroutes` should be, something like:
+The definition of `dhcp_staticroutes` should be, something like:
 
       10.0.0.0/8 10.127.0.1, 10.11.12.0/24 10.11.12.1
 
