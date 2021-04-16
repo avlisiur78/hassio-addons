@@ -41,6 +41,8 @@ DHCP_SUBNET=$(jq --raw-output ".dhcp_subnet" $CONFIG_PATH)
 DHCP_ROUTER=$(jq --raw-output ".dhcp_router" $CONFIG_PATH)
 DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
 DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
+DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
+DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
 DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
 # Enforces required env variables
@@ -140,7 +142,12 @@ if test ${DHCP_SERVER} = true; then
     echo "opt router     ${DHCP_ROUTER}"   >> ${UCONFIG}
     echo "option domain  ${DHCP_DOMAIN}"   >> ${UCONFIG}
     echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
-    
+
+if test ${DHCP_ROUTES} = true; then
+    # Setup static routes
+    echo "option staticroutes ${DHCP_STATICROUTES}" >> ${UCONFIG}
+fi
+
 # Create dhcp_static_leases
 # ===================
 DHCP_COUNT_LEASE=$(jq -r '.dhcp_static_lease | length' $CONFIG_PATH)
