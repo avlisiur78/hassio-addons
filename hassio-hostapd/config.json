@@ -57,7 +57,7 @@
     "dhcp_domain": "str",
     "dhcp_lease": "int",
     "dhcp_routes_enable": "bool",
-    "dhcp_staticroutes": "srt",
+    "dhcp_staticroutes": "str",
     "dhcp_static_lease": [
       {
         "name": "str",
