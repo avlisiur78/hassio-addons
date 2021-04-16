@@ -1,5 +1,9 @@
 # Changelog
 
+##
+### Added
+- The option for static routes
+
 ## [1.1.0.2]
 ### Added
 - The possibility to have static_lease
