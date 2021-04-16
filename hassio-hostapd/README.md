@@ -47,7 +47,7 @@ When channel set to 0, it will automatically find the best channel.
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
 
-The definition of `dhcp_staticroutes` should be, something like:
+If you need to use `dhcp_staticroutes` the option `dhcp_routes_enable` should be equal to `true` and the string something like:
 
       10.0.0.0/8 10.127.0.1, 10.11.12.0/24 10.11.12.1
 
