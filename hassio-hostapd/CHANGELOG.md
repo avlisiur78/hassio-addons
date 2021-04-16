@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0.2]
+### Added
+- The possibility to have static_lease
+
 ## [1.1.0.1] -> This Fork
 ### Added
 - Support for aditional settings
