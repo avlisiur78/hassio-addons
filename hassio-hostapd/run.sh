@@ -143,32 +143,27 @@ if test ${DHCP_SERVER} = true; then
     
 # Create dhcp_static_leases
 # ===================
-#for dhcp_static in $(jq --raw-output 'dhcp_static_leases|keys' $CONFIG_PATH ); do
-#for dhcp_static in $(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH); do
-for dhcp_static in $($DHCP_STATIC " " $CONFIG_PATH); do
-    NAME=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].name" $CONFIG_PATH)
-    MAC=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].mac" $CONFIG_PATH)
-    IP=$(jq --raw-output "dhcp_static_leases[${dhcp_static_lease}].ip" $CONFIG_PATH)
-    
-    #IP=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].ip")
-    #MAC=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].mac")
-    #NAME=$( $CONFIG_PATH "dhcp_static_leases[${dhcp_static_lease}].name")
+DHCP_COUNT_LEASE=$(jq -r '.dhcp_static_lease | length' $CONFIG_PATH)
+COUNT_LEASE=$[$DHCP_COUNT_LEASE - 1]
+TRK_LEASE=0
 
-    echo "# ${NAME}" >> ${UCONFIG}
-    echo "static_lease ${MAC} ${IP}" >> ${UCONFIG}
-        
-    #{
-    #    echo "dhcp_static_lease ${NAME} {"
-    #    echo "  hardware ethernet ${MAC};"
-    #    echo "  fixed-address ${IP};"
-    #    echo "  option dhcp_static_lease-name \"${NAME}\";"
-    #    echo "}"
-    #} >> "${UCONFIG}"
-done
+if [ $COUNT_LEASE -ge 0 ]; then
+   while [ $TRK_LEASE -le $COUNT_LEASE ] 
+   do
+      DHCP_LEASE_NAME=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].name?' $CONFIG_PATH)
+      DHCP_LEASE_MAC=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].mac?' $CONFIG_PATH)
+      DHCP_LEASE_IP=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].ip?' $CONFIG_PATH)
+      # write do file
+      echo '#'$DHCP_LEASE_NAME                                >> ${UCONFIG}
+      echo 'static_lease '$DHCP_LEASE_MAC' '$DHCP_LEASE_IP    >> ${UCONFIG}
+      TRK_LEASE=$[$TRK_LEASE+1]
+   done
+else
+   echo "#static_lease non requested."                        >> ${UCONFIG}
+fi
 # ===================
 
-    #echo "static_lease  ${dhcp_static_lease}" >> ${UCONFIG}
-    echo ""                                   >> ${UCONFIG}
+    echo ""                                                   >> ${UCONFIG}
 
     echo $DHCP_STATIC
     echo "Starting DHCP server..."
