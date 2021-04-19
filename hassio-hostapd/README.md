@@ -26,19 +26,22 @@ The available configuration options are the following. Make sure to edit and aju
     "ignore_broadcast_ssid": "0",
     "address": "192.168.2.1",
     "netmask": "255.255.255.0",
-    "broadcast": "192.168.2.254"
-    "interface": ""
-    "allow_internet": false
-    "dhcp_server": true
+    "broadcast": "192.168.2.254",
+    "interface": "",
+    "allow_internet": false,
+    "block_intranet": true,
+    "intranet_ip_range": "192.168.1.0/24",
+    "intranet_ips_exclude": "192.168.1.1",
+    "dhcp_server": true,
     "dhcp_start": "192.168.2.100",
     "dhcp_end": "192.168.2.200",
     "dhcp_dns": "1.1.1.1",
     "dhcp_subnet": "255.255.255.0",
     "dhcp_router": "192.168.2.1",
     "dhcp_domain": "local",
-    "dhcp_lease": "864000"
-    "dhcp_routes_enable": false
-    "dhcp_staticroutes": ""
+    "dhcp_lease": "864000",
+    "dhcp_routes_enable": false,
+    "dhcp_staticroutes": "",
     "dhcp_static_lease": []
 }
 
@@ -46,6 +49,11 @@ The available configuration options are the following. Make sure to edit and aju
 When channel set to 0, it will automatically find the best channel. 
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
+
+It possible to block the traffic between your IOT Wifi network and your main network, for that use the option `block_intranet`, it's also possible to exclude some internal IP's from this bloking process so you can define your router or and your DNS server, or some other stuff:
+
+    "intranet_ip_range": "192.168.1.0/24",    <---- Define the range to block
+    "intranet_ips_exclude": "192.168.1.1",    <---- Define the IPs to exclude from the block
 
 If you need to use `dhcp_staticroutes` the option `dhcp_routes_enable` should be equal to `true` and the string something like:
 
@@ -56,4 +64,4 @@ For definition of `dhcp_static_lease` please use this format:
       - name: hostname
         mac: '70:e9:76:22:41:ca'
         ip: 192.168.2.175
-      
+
