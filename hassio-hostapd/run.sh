@@ -90,7 +90,7 @@ INTERNET_IF="eth0"
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
-RULE_6="INPUT -s ${INTRANET_IP_RANGE} -j DROP"
+RULE_6="INPUT -i ${INTERFACE} -s ${INTRANET_IP_RANGE} -j DROP"
 
 echo "Deleting iptables"
 iptables -v -t nat -D $(echo ${RULE_3})
@@ -118,7 +118,7 @@ if test ${BLOCK_INTRANET} = true; then
     IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
     for IP in $IPS
     do
-    iptables -v -A INPUT -s $(echo ${IP} -j ACCEPT) 
+    iptables -v -A INPUT -i ${INTERFACE} -s $(echo ${IP} -j ACCEPT) 
     done
     iptables -v -A $(echo ${RULE_6})
 fi
