@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0.5]
+### Changed
+- Fixed bugs related to the traffic blocking between Wifi and intranet.
+
+## [1.1.0.4]
+### Added
+- New functionality to block traffic from Wifi to your Intranet with the possibility to exclude some IPs from that blocked traffic (for allowing router and dns, etc).
+
 ## [1.1.0.3]
 ### Added
 - The option for static routes
@@ -20,7 +28,6 @@
 ### Changed
 - Add possibility to configure the DHCP and Hosapd settings for better customization of the access point
 - Fix issue with enablind/disabling internet access not working before
-
 
 ## [1.0.11.5]
 ### Changed
@@ -57,7 +64,6 @@
 
 ### Changed
 - Apply Changelog Best Practices
-
 
 ## [1.0.0]
 - Initial version
