@@ -102,7 +102,7 @@ for IP in $IPS
 do
 iptables -v -D OUTPUT -i ${INTERFACE} -s $(echo ${IP} -j ACCEPT) 
 done
-echo "Deleting IP Range"
+echo "Deleting IP Range Blocking"
 iptables -v -D $(echo ${RULE_6})
 
 if test ${ALLOW_INTERNET} = true; then
@@ -115,11 +115,13 @@ fi
 # Block intranet
 if test ${BLOCK_INTRANET} = true; then
     echo "Blocking intranet"
+    echo "Creating IP exceptions if exists..."
     IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
     for IP in $IPS
     do
     iptables -v -A OUTPUT -i ${INTERFACE} -s $(echo ${IP} -j ACCEPT) 
     done
+    echo "Blocking Intranet IP Range if exists..."
     iptables -v -A $(echo ${RULE_6})
 fi
 
