@@ -106,24 +106,27 @@ echo "Deleting IP Range Blocking"
 iptables -v -D $(echo ${RULE_6})
 
 
-# Block intranet
-if test ${BLOCK_INTRANET} = true; then
-    echo "Blocking intranet"
-    echo "Creating IP exceptions if exists..."
-    IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
-    for IP in $IPS
-    do
-    iptables -v -A FORWARD -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
-    done
-    echo "Blocking Intranet IP Range if exists..."
-    iptables -v -A $(echo ${RULE_6})
-fi
-
 if test ${ALLOW_INTERNET} = true; then
     echo "Configuring iptables for NAT"
     iptables -v -t nat -A $(echo ${RULE_3})
     iptables -v -A $(echo ${RULE_4})
     iptables -v -A $(echo ${RULE_5})
+fi
+
+
+# Block intranet
+if test ${BLOCK_INTRANET} = true; then
+    echo "Blocking intranet"
+    echo "Creating IP exceptions if exists..."
+    IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
+    SEQ=0
+    for IP in $IPS
+    do
+    SEQ=$SEQ + 1
+    iptables -v -I FORWARD ${SEQ} -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
+    done
+    echo "Blocking Intranet IP Range if exists..." # RULE 6
+    iptables -v -I FORWARD ${SEQ} -o ${INTERFACE} -d ${INTRANET_IP_RANGE} -j DROP
 fi
 
 
