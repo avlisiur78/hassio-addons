@@ -90,7 +90,7 @@ INTERNET_IF="eth0"
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
-RULE_6="OUTPUT -o ${INTERFACE} -d ${INTRANET_IP_RANGE} -j DROP"
+RULE_6="FORWARD -o ${INTERFACE} -d ${INTRANET_IP_RANGE} -j DROP"
 
 echo "Deleting iptables"
 iptables -v -t nat -D $(echo ${RULE_3})
@@ -100,17 +100,11 @@ echo "Deleting iptables IPs Excluded"
 IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
 for IP in $IPS
 do
-iptables -v -D OUTPUT -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
+iptables -v -D FORWARD -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
 done
 echo "Deleting IP Range Blocking"
 iptables -v -D $(echo ${RULE_6})
 
-if test ${ALLOW_INTERNET} = true; then
-    echo "Configuring iptables for NAT"
-    iptables -v -t nat -A $(echo ${RULE_3})
-    iptables -v -A $(echo ${RULE_4})
-    iptables -v -A $(echo ${RULE_5})
-fi
 
 # Block intranet
 if test ${BLOCK_INTRANET} = true; then
@@ -119,10 +113,17 @@ if test ${BLOCK_INTRANET} = true; then
     IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
     for IP in $IPS
     do
-    iptables -v -A OUTPUT -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
+    iptables -v -A FORWARD -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
     done
     echo "Blocking Intranet IP Range if exists..."
     iptables -v -A $(echo ${RULE_6})
+fi
+
+if test ${ALLOW_INTERNET} = true; then
+    echo "Configuring iptables for NAT"
+    iptables -v -t nat -A $(echo ${RULE_3})
+    iptables -v -A $(echo ${RULE_4})
+    iptables -v -A $(echo ${RULE_5})
 fi
 
 
