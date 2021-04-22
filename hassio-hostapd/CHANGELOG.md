@@ -4,7 +4,7 @@
 ### Changed
 - Firewall sequence to execute correct blocking of the intranet.
 
-## [1.1.0.5]6
+## [1.1.0.5]
 ### Changed
 - Fixed bugs related to the traffic blocking between Wifi and intranet.
 
