@@ -122,7 +122,7 @@ if test ${BLOCK_INTRANET} = true; then
     SEQ=0
     for IP in $IPS
     do
-    SEQ=$SEQ + 1
+    SEQ=$[$SEQ+1]
     iptables -v -I FORWARD ${SEQ} -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
     done
     echo "Blocking Intranet IP Range if exists..." # RULE 6
