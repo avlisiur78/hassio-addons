@@ -81,20 +81,19 @@ fi
 
 if [[ -z ${DHCP_SUBNET} ]]; then
         MASK=24
-    else
-        if ${DHCP_SUBNET} = '255.255.255.0'; then
-            MASK=24
-        fi
-        if ${DHCP_SUBNET} = '255.255.0.0'; then
-            MASK=16
-        fi
-        if ${DHCP_SUBNET} = '255.0.0.0'; then
-            MASK=8
-        fi
-        if ${DHCP_SUBNET} = '255.255.252.0'; then
-            MASK=22
-        fi
-    fi
+else
+     if [[ ${DHCP_SUBNET} = '255.255.255.0' ]]; then
+         MASK=24
+     fi
+     if [[ ${DHCP_SUBNET} = '255.255.0.0' ]]; then
+         MASK=16
+     fi
+     if [[ ${DHCP_SUBNET} = '255.0.0.0' ]]; then
+         MASK=8
+     fi
+     if [[ ${DHCP_SUBNET} = '255.255.252.0' ]]; then
+         MASK=22
+     fi
 fi
 
 echo "Set nmcli managed no"
