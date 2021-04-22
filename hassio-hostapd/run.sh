@@ -142,6 +142,7 @@ if test ${BLOCK_INTRANET} = true; then
     SEQ=$[$SEQ+1]
     iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
     done
+    SEQ=$[$SEQ+1]
     echo "Blocking Intranet IP Range if exists..." # RULE 6
     iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 fi
