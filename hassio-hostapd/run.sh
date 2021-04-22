@@ -79,6 +79,24 @@ if [[ ${UNKNOWN} == true ]]; then
         exit 1
 fi
 
+if [[ -z ${DHCP_SUBNET} ]]; then
+        MASK=24
+    else
+        if ${DHCP_SUBNET} = '255.255.255.0'; then
+            MASK=24
+        fi
+        if ${DHCP_SUBNET} = '255.255.0.0'; then
+            MASK=16
+        fi
+        if ${DHCP_SUBNET} = '255.0.0.0'; then
+            MASK=8
+        fi
+        if ${DHCP_SUBNET} = '255.255.252.0'; then
+            MASK=22
+        fi
+    fi
+fi
+
 echo "Set nmcli managed no"
 nmcli dev set ${INTERFACE} managed no
 
@@ -90,7 +108,7 @@ INTERNET_IF="eth0"
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
-RULE_6="FORWARD -o ${INTERFACE} -d ${INTRANET_IP_RANGE} -j DROP"
+RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
 echo "Deleting iptables"
 iptables -v -t nat -D $(echo ${RULE_3})
@@ -100,7 +118,7 @@ echo "Deleting iptables IPs Excluded"
 IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
 for IP in $IPS
 do
-iptables -v -D FORWARD -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
+iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
 done
 echo "Deleting IP Range Blocking"
 iptables -v -D $(echo ${RULE_6})
@@ -123,10 +141,10 @@ if test ${BLOCK_INTRANET} = true; then
     for IP in $IPS
     do
     SEQ=$[$SEQ+1]
-    iptables -v -I FORWARD ${SEQ} -o ${INTERFACE} -d $(echo ${IP} -j ACCEPT) 
+    iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
     done
     echo "Blocking Intranet IP Range if exists..." # RULE 6
-    iptables -v -I FORWARD ${SEQ} -o ${INTERFACE} -d ${INTRANET_IP_RANGE} -j DROP
+    iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 fi
 
 
