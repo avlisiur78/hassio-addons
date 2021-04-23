@@ -50,7 +50,7 @@ When channel set to 0, it will automatically find the best channel.
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
 
-It possible to block the traffic between your IOT Wifi network and your main network, for that use the option `block_intranet`, it's also possible to exclude some internal IP's from this bloking process so you can define your router or and your DNS server, or some other stuff:
+It's possible to block the traffic between your IOT Wifi network and your main network, for that use the option `block_intranet`, it's also possible to exclude some internal IP's from this bloking process so you can define your router or and your DNS server, or some other stuff:
 
     "intranet_ip_range": "192.168.1.0/24",    <---- Define the range to block
     "intranet_ips_exclude": "192.168.1.1",    <---- Define the IPs to exclude from the block
