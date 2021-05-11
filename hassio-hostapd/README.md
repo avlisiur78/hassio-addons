@@ -1,9 +1,11 @@
 # Wifi Hotspot
-Enables an access point using USB Wifi dongle on Home Assistant (with embedded DHCP server).
-This is mostly usefull if you want to have a different network infrastructure for your IoT devices, and can not do it with the RPi onboard Wifi, due to stabilities issue. 
+Enables an access point using the RPi4 internal Wifi or a USB Wifi dongle, on your Home Assistant (with embedded DHCP server).
+This is mostly useful if you want to have a different network infrastructure for your IoT devices.
 
-It allows creating an access point **with optional a DHCP server**, using external USB Wifi dongles, **Ralink, Atheros and others**. 
-This project is a "spin-off"/fork from the "joaofl/hassio-addons", that already was a fork from hostapd addon and he rebranded, and I rebranded again..., and add a few more features that I need, like the possibility to hide ssid, domain name, etc.
+Please note that in some cases you can't do it with the RPi onboard Wifi, due to stability issues (not related to hostapd).
+
+It allows the creation of an access point **with optional a DHCP server**, using, the internal RPi4 Wifi or external USB Wifi dongles, like, **Ralink, Atheros and others**. 
+This project is a "spin-off"/fork from the "joaofl/hassio-addons", that already was a fork from hostapd addon and he rebranded, and I rebranded again..., and added a few more features that I need, like the possibility to hide ssid, domain name, blocking the traffic to the pre-existing intranet, etc.
 
 ## Installation
 
@@ -15,7 +17,7 @@ https://github.com/avlisiur78/hassio-addons
 
 ### Configuration
 
-The available configuration options are the following. Make sure to edit and ajust according to your needs:
+The available configuration options are the following. Make sure to edit and adjust according to your needs:
 
 ```
 {
@@ -50,10 +52,10 @@ When channel set to 0, it will automatically find the best channel.
 
 When the `interface` option is left blank, a list with the detected wlan interfaces will be printed on the logs and the addon will terminate. Set the correct `interface` value on the configuration then restart the addon.
 
-It's possible to block the traffic between your IOT Wifi network and your main network, for that use the option `block_intranet`, it's also possible to exclude some internal IP's from this bloking process so you can define your router or and your DNS server, or some other stuff:
+It's possible to block the traffic between your IOT Wifi network and your main network, for that, use the option `block_intranet`, it's also possible to exclude some internal IP's from this blockade process, so you may define your "special" devices like, the router, the DNS server, or some other stuff:
 
-    "intranet_ip_range": "192.168.1.0/24",    <---- Define the range to block
-    "intranet_ips_exclude": "192.168.1.1",    <---- Define the IPs to exclude from the block
+    "intranet_ip_range": "192.168.1.0/24",    <---- Define the intranet IP range to block
+    "intranet_ips_exclude": "192.168.1.1",    <---- Define the IPs to be excluded from the blockade
 
 If you need to use `dhcp_staticroutes` the option `dhcp_routes_enable` should be equal to `true` and the string something like:
 
