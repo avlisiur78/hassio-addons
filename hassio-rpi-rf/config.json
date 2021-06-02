@@ -2,7 +2,7 @@
     "name": "RPi RF Receiver",
     "version": "2.0",
     "slug": "rfreceiver",
-    "description": "RPi RF Receiver",
+    "description": "Listen to RF waves transmited so you can config your Home Assistant",
     "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
     "url": "https://github.com/avlisiur78/hassio-addons/tree/master/hassio-rpi-rf",
     "startup": "system",
