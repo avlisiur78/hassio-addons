@@ -12,6 +12,6 @@ https://github.com/avlisiur78/hassio-addons
 
 ### Configuration
 
-Place yor client.ovpn file in hassio/share folder 
+Place your client.ovpn file in hassio/share folder 
 
 Perfect perfect is to place the client.ovpn in the folder before install, but if already installed, just place the metioned file, and restart the Hassio.
