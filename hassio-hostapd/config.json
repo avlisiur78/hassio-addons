@@ -18,7 +18,7 @@
     "ssid": "HomeAssistant",
     "wpa_passphrase": "12345678",
     "channel": "0",
-    "country": "US",
+    "country": "PT",
     "ignore_broadcast_ssid": "0",
     "address": "192.168.2.1",
     "netmask": "255.255.255.0",
@@ -39,8 +39,8 @@
     "dhcp_routes_enable": false,
     "dhcp_staticroutes": "",
     "dhcp_static_lease": [],
-    "openvpn_acive": false,
-    "ovpnfile": "str"
+    "openvpn_active": false,
+    "ovpnfile": "client.ovpn"
   },
   "schema": {
     "ssid": "str",
@@ -74,6 +74,7 @@
       }
     ],
     "openvpn_active": "bool",
+    "ovpnfile": "str",
     "map" : ["share:rw"]
   }
 } 
