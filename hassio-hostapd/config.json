@@ -75,6 +75,6 @@
     ],
     "openvpn_active": "bool",
     "ovpnfile": "str"
-  }
+  },
   "map" : ["share:rw"]
 } 
