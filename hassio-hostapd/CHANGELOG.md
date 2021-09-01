@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.0.7]
+### Added
+- Enables the possibility to create a VPN tunnel by placing the ovpn in the share folder
+
 ## [1.1.0.6]
 ### Changed
 - Firewall sequence to execute correct blocking of the intranet.
