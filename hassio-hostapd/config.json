@@ -38,7 +38,9 @@
     "dhcp_lease": "864000",
     "dhcp_routes_enable": false,
     "dhcp_staticroutes": "",
-    "dhcp_static_lease": []
+    "dhcp_static_lease": [],
+    "openvpn_acive": false,
+    "ovpnfile": "str"
   },
   "schema": {
     "ssid": "str",
@@ -70,6 +72,8 @@
         "mac": "str",
         "ip": "str"
       }
-    ]
+    ],
+    "openvpn_active": "bool",
+    "map" : ["share:rw"]
   }
 } 
