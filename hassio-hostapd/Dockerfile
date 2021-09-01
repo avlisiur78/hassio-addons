@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-MAINTAINER João Loureiro <joaofl@gmail.com>
+MAINTAINER Rui Silva <avlisiur+78@gmail.com>
 
 # Set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -11,9 +11,10 @@ ENV LANG C.UTF-8
 # Install requirements for add-on
 RUN apk update && apk add --no-cache bash jq iw linux-firmware-other \
                             linux-firmware-ath6k linux-firmware-ath10k \
-                            linux-firmware-ath9k_htc \
+                            linux-firmware-ath9k_htc openvpn \
                             hostapd networkmanager iptables \
                             net-tools sudo busybox-extras  && \
+                            rm -rf /tmp/* && \
                             rm -rf /var/cache/apk/*
 
 COPY hostapd.conf /
