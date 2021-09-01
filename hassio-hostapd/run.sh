@@ -48,6 +48,10 @@ DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
 DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
 DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
+OPENVPN_ACTIVE=$(jq --raw-output ".openvpn_active" $CONFIG_PATH)
+OVPNFILE="$(jq --raw-output '.ovpnfile' $CONFIG_PATH)"
+OPENVPN_CONFIG=/share/${OVPNFILE}
+
 # Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
 for required_var in "${required_vars[@]}"; do
@@ -234,3 +238,65 @@ while true; do
     ifconfig | grep ${INTERFACE} -A6
     sleep 3600
 done
+
+if test ${OPENVPN_ACTIVE} = true; then
+    # Setup openvpn
+    # Setup tunnel
+    function init_tun_interface(){
+    # create the tunnel for the openvpn client
+
+    mkdir -p /dev/net
+    if [ ! -c /dev/net/tun ]; then
+        mknod /dev/net/tun c 10 200
+    fi
+    }
+    # check file config
+    function check_files_available(){
+    failed=0
+
+    if [[ ! -f ${OPENVPN_CONFIG} ]]
+    then
+        echo "File ${OPENVPN_CONFIG} not found"
+        failed=1
+        break
+    fi
+
+    if [[ ${failed} == 0 ]]
+    then
+        return 0
+    else
+        return 1
+    fi
+    }
+    
+    # wait config
+    function wait_configuration(){
+
+    echo "Wait until the user uploads the files."
+    # therefore, wait until the user upload the required certification files
+    while true; do
+
+        check_files_available
+
+        if [[ $? == 0 ]]
+        then
+            break
+        fi
+
+        sleep 5
+    done
+    echo "All files available!"
+    }
+    
+    init_tun_interface
+
+    # wait until the user uploaded the configuration files
+    wait_configuration
+
+    echo "Setup the VPN connection with the following OpenVPN configuration."
+
+    # try to connect to the server using the used defined configuration
+    openvpn --config ${OPENVPN_CONFIG}
+    
+fi
+
