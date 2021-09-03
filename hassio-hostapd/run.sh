@@ -2,11 +2,11 @@
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
-    if test ${BRIDGE_ACTIVE} = true; then
-        ifdown eth0:99
+    if test $BRIDGE_ACTIVE = true; then
+        ifdown $BRIDGE_ETH
         sleep 1
-        ip link set eth0:99 down
-        ip addr flush dev eth0:99
+        ip link set $BRIDGE_ETH down
+        ip addr flush dev $BRIDGE_ETH
     fi
     ifdown $INTERFACE
     sleep 1
@@ -54,6 +54,7 @@ DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
 DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
 DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
+BRIDGE_ETH="eth0:99"
 BRIDGE_ACTIVE=$(jq --raw-output ".bridge_eth99" $CONFIG_PATH)
 BRIDGE_IP=$(jq --raw-output ".bridge_ip_eth99" $CONFIG_PATH)
 
@@ -186,7 +187,7 @@ echo "  broadcast ${BROADCAST}" >> ${IFFILE}
 # criar eth0:99
 if test ${BRIDGE_ACTIVE} = true; then
     echo "" >> ${IFFILE}
-    echo "iface eth0:99 inet static" >> ${IFFILE}
+    echo "iface ${BRIDGE_ETH} inet static" >> ${IFFILE}
     echo "  address ${BRIDGE_IP}" >> ${IFFILE}
     echo "  netmask ${NETMASK}" >> ${IFFILE}
     echo "  broadcast ${BROADCAST}" >> ${IFFILE}
@@ -198,7 +199,7 @@ echo "Resseting interfaces"
 reset_interfaces
 # criar eth0:99
 if test ${BRIDGE_ACTIVE} = true; then
-    ifup eth0:99
+    ifup ${BRIDGE_ETH}
     sleep 3
 fi
 ifup ${INTERFACE}
