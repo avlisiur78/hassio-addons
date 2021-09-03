@@ -177,8 +177,9 @@ echo "  broadcast ${BROADCAST}" >> ${IFFILE}
 echo " " >> ${IFFILE}
 echo "iface eth0:5 inet static" >> ${IFFILE}
 echo "  address 192.168.5.222" >> ${IFFILE}
-echo "  netmask 255.255.255.0" >> ${IFFILE}
-echo "  broadcast 192.168.5.255" >> ${IFFILE}
+echo "  netmask ${NETMASK}" >> ${IFFILE}
+echo "  broadcast ${BROADCAST}" >> ${IFFILE}
+echo "  address ${ADDRESS}" >> ${IFFILE}
 # fim
 echo "" >> ${IFFILE}
 
