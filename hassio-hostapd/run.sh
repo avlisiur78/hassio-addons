@@ -174,7 +174,7 @@ echo "  address ${ADDRESS}" >> ${IFFILE}
 echo "  netmask ${NETMASK}" >> ${IFFILE}
 echo "  broadcast ${BROADCAST}" >> ${IFFILE}
 # criar eth0:5
-echo ""
+echo " " >> ${IFFILE}
 echo "iface eth0:5 inet static" >> ${IFFILE}
 echo "  address 192.168.5.222" >> ${IFFILE}
 echo "  netmask 255.255.255.0" >> ${IFFILE}
@@ -185,6 +185,9 @@ echo "" >> ${IFFILE}
 echo "Resseting interfaces"
 reset_interfaces
 ifup ${INTERFACE}
+# criar eth0:5
+ifup eth0:5
+# fim
 sleep 1
 
 if test ${DHCP_SERVER} = true; then
