@@ -173,6 +173,13 @@ echo "iface ${INTERFACE} inet static" >> ${IFFILE}
 echo "  address ${ADDRESS}" >> ${IFFILE}
 echo "  netmask ${NETMASK}" >> ${IFFILE}
 echo "  broadcast ${BROADCAST}" >> ${IFFILE}
+# criar eth0:5
+echo ""
+echo "iface eth0:5 inet static" >> ${IFFILE}
+echo "  address 192.168.5.222" >> ${IFFILE}
+echo "  netmask 255.255.255.0" >> ${IFFILE}
+echo "  broadcast 192.168.5.255" >> ${IFFILE}
+# fim
 echo "" >> ${IFFILE}
 
 echo "Resseting interfaces"
