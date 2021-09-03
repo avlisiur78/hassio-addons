@@ -54,8 +54,8 @@ DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
 DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
 DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
-BRIDGE_ACTIVE=$(jq --raw-output ".bridge_eth_99" $CONFIG_PATH)
-BRIDGE_IP=$(jq --raw-output ".bridge_ip_eth_99" $CONFIG_PATH)
+BRIDGE_ACTIVE=$(jq --raw-output ".bridge_eth99" $CONFIG_PATH)
+BRIDGE_IP=$(jq --raw-output ".bridge_ip_eth99" $CONFIG_PATH)
 
 OPENVPN_ACTIVE=$(jq --raw-output ".openvpn_active" $CONFIG_PATH)
 OVPNFILE="$(jq --raw-output '.ovpnfile' $CONFIG_PATH)"
@@ -118,7 +118,7 @@ echo "Network interface set to ${INTERFACE}"
 INTERNET_IF="eth0"
 
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
-#RULE_3="POSTROUTING -s {ADDRESS}/${MASK} -j SNAT --to <seu ip valido>"
+#RULE_3="POSTROUTING -s {ADDRESS}/${MASK} -j SNAT --to $(echo ${IP}"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
@@ -185,7 +185,7 @@ echo "  netmask ${NETMASK}" >> ${IFFILE}
 echo "  broadcast ${BROADCAST}" >> ${IFFILE}
 # criar eth0:99
 if test ${BRIDGE_ACTIVE} = true; then
-    echo " " >> ${IFFILE}
+    echo "" >> ${IFFILE}
     echo "iface eth0:99 inet static" >> ${IFFILE}
     echo "  address ${BRIDGE_IP}" >> ${IFFILE}
     echo "  netmask ${NETMASK}" >> ${IFFILE}
