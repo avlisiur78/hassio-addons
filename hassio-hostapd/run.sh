@@ -6,6 +6,12 @@ reset_interfaces(){
     sleep 1
     ip link set $INTERFACE down
     ip addr flush dev $INTERFACE
+    if test ${BRIDGE_ACTIVE} = true; then
+        ifdown eth0:99
+        sleep 1
+        ip link set eth0:99 down
+        ip addr flush dev eth0:99
+    fi
 }
 
 term_handler(){
@@ -177,23 +183,26 @@ echo "iface ${INTERFACE} inet static" >> ${IFFILE}
 echo "  address ${ADDRESS}" >> ${IFFILE}
 echo "  netmask ${NETMASK}" >> ${IFFILE}
 echo "  broadcast ${BROADCAST}" >> ${IFFILE}
-# criar eth0:5
-echo " " >> ${IFFILE}
-echo "iface eth0:5 inet static" >> ${IFFILE}
-echo "  address 192.168.5.222" >> ${IFFILE}
-echo "  netmask ${NETMASK}" >> ${IFFILE}
-echo "  broadcast ${BROADCAST}" >> ${IFFILE}
-echo "  address ${ADDRESS}" >> ${IFFILE}
-# fim
+# criar eth0:99
+if test ${BRIDGE_ACTIVE} = true; then
+    echo " " >> ${IFFILE}
+    echo "iface eth0:99 inet static" >> ${IFFILE}
+    echo "  address ${BRIDGE_IP}" >> ${IFFILE}
+    echo "  netmask ${NETMASK}" >> ${IFFILE}
+    echo "  broadcast ${BROADCAST}" >> ${IFFILE}
+    echo "  address ${ADDRESS}" >> ${IFFILE}
+fi
 echo "" >> ${IFFILE}
 
 echo "Resseting interfaces"
 reset_interfaces
 ifup ${INTERFACE}
-# criar eth0:5
-ifup eth0:5
-# fim
-sleep 1
+sleep 3
+# criar eth0:99
+if test ${BRIDGE_ACTIVE} = true; then
+    ifup eth0:99
+    sleep 1
+fi
 
 if test ${DHCP_SERVER} = true; then
     # Setup hdhcpd.conf
