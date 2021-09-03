@@ -2,16 +2,16 @@
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
-    ifdown $INTERFACE
-    sleep 1
-    ip link set $INTERFACE down
-    ip addr flush dev $INTERFACE
     if test ${BRIDGE_ACTIVE} = true; then
         ifdown eth0:99
         sleep 1
         ip link set eth0:99 down
         ip addr flush dev eth0:99
     fi
+    ifdown $INTERFACE
+    sleep 1
+    ip link set $INTERFACE down
+    ip addr flush dev $INTERFACE
 }
 
 term_handler(){
@@ -54,8 +54,8 @@ DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
 DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
 DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
-BRIDGE_ACTIVE=$(jq --raw-output ".bridge_eth:99" $CONFIG_PATH)
-BRIDGE_IP=$(jq --raw-output ".bridge_ip_eth:99" $CONFIG_PATH)
+BRIDGE_ACTIVE=$(jq --raw-output ".bridge_eth_99" $CONFIG_PATH)
+BRIDGE_IP=$(jq --raw-output ".bridge_ip_eth_99" $CONFIG_PATH)
 
 OPENVPN_ACTIVE=$(jq --raw-output ".openvpn_active" $CONFIG_PATH)
 OVPNFILE="$(jq --raw-output '.ovpnfile' $CONFIG_PATH)"
@@ -196,13 +196,13 @@ echo "" >> ${IFFILE}
 
 echo "Resseting interfaces"
 reset_interfaces
-ifup ${INTERFACE}
-sleep 3
 # criar eth0:99
 if test ${BRIDGE_ACTIVE} = true; then
     ifup eth0:99
-    sleep 1
+    sleep 3
 fi
+ifup ${INTERFACE}
+sleep 1
 
 if test ${DHCP_SERVER} = true; then
     # Setup hdhcpd.conf
