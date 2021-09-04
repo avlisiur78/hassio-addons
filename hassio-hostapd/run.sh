@@ -6,7 +6,7 @@ reset_interfaces(){
         ifdown $BRIDGE_ETH
         sleep 1
         ip link set $BRIDGE_ETH down
-        ip addr flush dev $BRIDGE_ETH
+        #ip addr flush dev $BRIDGE_ETH
     fi
     ifdown $INTERFACE
     sleep 1
