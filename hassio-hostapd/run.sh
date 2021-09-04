@@ -111,48 +111,39 @@ nmcli dev set ${INTERFACE} managed no
 
 echo "Network interface set to ${INTERFACE}"
 
-# Configure iptables to enable/disable internet
+# iptables rules
 INTERNET_IF="eth0"
 
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
-#RULE_3="POSTROUTING -s {ADDRESS}/${MASK} -j SNAT --to $(echo ${IP}"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-if test ${BRIDGE_ACTIVE} = true; then
-    RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
-fi
+RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
+
+# deleting rules
 
 echo "Deleting iptables"
 iptables -v -t nat -D $(echo ${RULE_3})
 iptables -v -D $(echo ${RULE_4})
-if test ${BRIDGE_ACTIVE} = true; then
-    iptables -v -D $(echo ${RULE_4_1})
-fi
+echo "Deleting rule regarding bridge, may informe error, it's ok"
+iptables -v -D $(echo ${RULE_4_1})
 iptables -v -D $(echo ${RULE_5})
 echo "Deleting iptables IPs Excluded"
 IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
 for IP in $IPS
 do
-iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
+    iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
 done
 echo "Deleting IP Range Blocking"
 iptables -v -D $(echo ${RULE_6})
 
+# ===================================================
 
 if test ${ALLOW_INTERNET} = true; then
     echo "Configuring iptables for NAT"
     iptables -v -t nat -A $(echo ${RULE_3})
     iptables -v -A $(echo ${RULE_4})
-   # if test ${BRIDGE_ACTIVE} = true; then
-   #     iptables -v -D $(echo ${RULE_4_1})
-   # fi
     iptables -v -A $(echo ${RULE_5})
-fi
-
-# Add bridge rule
-if test ${BRIDGE_ACTIVE} = true; then
-    iptables -v -A $(echo ${RULE_4_1})
 fi
 
 # Block intranet
@@ -163,14 +154,28 @@ if test ${BLOCK_INTRANET} = true; then
     SEQ=0
     for IP in $IPS
     do
-    SEQ=$[$SEQ+1]
-    iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
+        SEQ=$[$SEQ+1]
+        iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
     done
     SEQ=$[$SEQ+1]
+    # Rule regarding bridge
+    if test ${BRIDGE_ACTIVE} = true; then
+        echo"Enabling bridge trafic"
+        iptables -v -I FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT
+    fi
+fi
+
+# Add bridge rule
+if test ${BRIDGE_ACTIVE} = true; then
+    iptables -v -I $(echo ${RULE_4_1})
+fi
+
+if test ${BLOCK_INTRANET} = true; then
     echo "Blocking Intranet IP Range if exists..." # RULE 6
     iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 fi
 
+# ===================================================
 
 # Setup hostapd.conf
 HCONFIG="/hostapd.conf"
@@ -183,6 +188,8 @@ echo "country_code=${COUNTRY}" >> ${HCONFIG}
 echo "ignore_broadcast_ssid=${BROADCASTSSID}" >> ${HCONFIG}
 echo "interface=${INTERFACE}" >> ${HCONFIG}
 echo "" >> ${HCONFIG}
+
+# ===================================================
 
 # Setup interface
 IFFILE="/etc/network/interfaces"
@@ -204,6 +211,8 @@ if test ${BRIDGE_ACTIVE} = true; then
 fi
 echo "" >> ${IFFILE}
 
+# ===================================================
+
 echo "Resseting interfaces"
 reset_interfaces
 # criar eth0:99
@@ -213,6 +222,8 @@ if test ${BRIDGE_ACTIVE} = true; then
 fi
 ifup ${INTERFACE}
 sleep 1
+
+# ===================================================
 
 if test ${DHCP_SERVER} = true; then
     # Setup hdhcpd.conf
@@ -233,6 +244,8 @@ if test ${DHCP_ROUTES} = true; then
     echo "option staticroutes ${DHCP_STATICROUTES}" >> ${UCONFIG}
 fi
 
+# ===================================================
+
 # Create dhcp_static_leases
 # ===================
 DHCP_COUNT_LEASE=$(jq -r '.dhcp_static_lease | length' $CONFIG_PATH)
@@ -241,7 +254,7 @@ TRK_LEASE=0
 
 if [ $COUNT_LEASE -ge 0 ]; then
    while [ $TRK_LEASE -le $COUNT_LEASE ] 
-   do
+    do
       DHCP_LEASE_NAME=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].name?' $CONFIG_PATH)
       DHCP_LEASE_MAC=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].mac?' $CONFIG_PATH)
       DHCP_LEASE_IP=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].ip?' $CONFIG_PATH)
@@ -249,18 +262,18 @@ if [ $COUNT_LEASE -ge 0 ]; then
       echo '#'$DHCP_LEASE_NAME                                >> ${UCONFIG}
       echo 'static_lease '$DHCP_LEASE_MAC' '$DHCP_LEASE_IP    >> ${UCONFIG}
       TRK_LEASE=$[$TRK_LEASE+1]
-   done
+    done
 else
-   echo "#static_lease non requested."                        >> ${UCONFIG}
+    echo "#static_lease non requested."                       >> ${UCONFIG}
 fi
-# ===================
-
     echo ""                                                   >> ${UCONFIG}
 
     echo $DHCP_STATIC
     echo "Starting DHCP server..."
     udhcpd -f &
 fi
+
+# ===================================================
 
 sleep 5
 
@@ -272,6 +285,10 @@ while true; do
     ifconfig | grep ${INTERFACE} -A6
     sleep 3600
 done
+
+# ===================================================
+
+echo "Starting OpenVPN Client"
 
 if test ${OPENVPN_ACTIVE} = true; then
     # Setup openvpn
