@@ -3,11 +3,8 @@
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
     if [[ $BRIDGE_ACTIVE == true ]]; then
-        ifdown $BRIDGE_ETH
+        ip a d $BRIDGE_IP dev $BRIDGE_ETH 
         sleep 1
-        ifconfig $BRIDGE_ETH down
-        #ip link set $BRIDGE_ETH down
-        #ip addr flush dev $BRIDGE_ETH
     fi
     ifdown $INTERFACE
     sleep 1
@@ -122,12 +119,18 @@ INTERNET_IF="eth0"
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 #RULE_3="POSTROUTING -s {ADDRESS}/${MASK} -j SNAT --to $(echo ${IP}"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+if test ${BRIDGE_ACTIVE} = true; then
+    RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
+fi
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
 echo "Deleting iptables"
 iptables -v -t nat -D $(echo ${RULE_3})
 iptables -v -D $(echo ${RULE_4})
+if test ${BRIDGE_ACTIVE} = true; then
+    iptables -v -D $(echo ${RULE_4_1})
+fi
 iptables -v -D $(echo ${RULE_5})
 echo "Deleting iptables IPs Excluded"
 IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
@@ -143,6 +146,9 @@ if test ${ALLOW_INTERNET} = true; then
     echo "Configuring iptables for NAT"
     iptables -v -t nat -A $(echo ${RULE_3})
     iptables -v -A $(echo ${RULE_4})
+    if test ${BRIDGE_ACTIVE} = true; then
+        iptables -v -D $(echo ${RULE_4_1})
+    fi
     iptables -v -A $(echo ${RULE_5})
 fi
 
@@ -192,7 +198,7 @@ if test ${BRIDGE_ACTIVE} = true; then
     echo "  address ${BRIDGE_IP}" >> ${IFFILE}
     echo "  netmask ${NETMASK}" >> ${IFFILE}
     echo "  broadcast ${BROADCAST}" >> ${IFFILE}
-    echo "  address ${ADDRESS}" >> ${IFFILE}
+    echo "  gateway ${ADDRESS}" >> ${IFFILE}
 fi
 echo "" >> ${IFFILE}
 
