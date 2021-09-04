@@ -5,7 +5,8 @@ reset_interfaces(){
     if test $BRIDGE_ACTIVE = true; then
         ifdown $BRIDGE_ETH
         sleep 1
-        ip link set $BRIDGE_ETH down
+        ifconfig $BRIDGE_ETH down
+        #ip link set $BRIDGE_ETH down
         #ip addr flush dev $BRIDGE_ETH
     fi
     ifdown $INTERFACE
