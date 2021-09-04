@@ -2,7 +2,7 @@
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
-    if test $BRIDGE_ACTIVE = true; then
+    if [[ $BRIDGE_ACTIVE == true ]]; then
         ifdown $BRIDGE_ETH
         sleep 1
         ifconfig $BRIDGE_ETH down
