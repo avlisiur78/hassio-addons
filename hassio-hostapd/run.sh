@@ -2,10 +2,8 @@
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
-    if [[ $BRIDGE_ACTIVE == true ]]; then
-        ip a d $BRIDGE_IP dev $BRIDGE_ETH 
-        sleep 1
-    fi
+    ip a d $BRIDGE_IP dev $BRIDGE_ETH 
+    sleep 1
     ifdown $INTERFACE
     sleep 1
     ip link set $INTERFACE down
@@ -146,12 +144,16 @@ if test ${ALLOW_INTERNET} = true; then
     echo "Configuring iptables for NAT"
     iptables -v -t nat -A $(echo ${RULE_3})
     iptables -v -A $(echo ${RULE_4})
-    if test ${BRIDGE_ACTIVE} = true; then
-        iptables -v -D $(echo ${RULE_4_1})
-    fi
+   # if test ${BRIDGE_ACTIVE} = true; then
+   #     iptables -v -D $(echo ${RULE_4_1})
+   # fi
     iptables -v -A $(echo ${RULE_5})
 fi
 
+# Add bridge rule
+if test ${BRIDGE_ACTIVE} = true; then
+    iptables -v -A $(echo ${RULE_4_1})
+fi
 
 # Block intranet
 if test ${BLOCK_INTRANET} = true; then
@@ -198,7 +200,7 @@ if test ${BRIDGE_ACTIVE} = true; then
     echo "  address ${BRIDGE_IP}" >> ${IFFILE}
     echo "  netmask ${NETMASK}" >> ${IFFILE}
     echo "  broadcast ${BROADCAST}" >> ${IFFILE}
-    echo "  gateway ${ADDRESS}" >> ${IFFILE}
+ #   echo "  gateway ${ADDRESS}" >> ${IFFILE}
 fi
 echo "" >> ${IFFILE}
 
