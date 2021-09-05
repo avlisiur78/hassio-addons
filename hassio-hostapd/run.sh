@@ -114,65 +114,76 @@ echo "Network interface set to ${INTERFACE}"
 # iptables rules
 INTERNET_IF="eth0"
 
+# Regras sem bridge
+if test ${BRIDGE_ACTIVE} = false; then
+
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
-# deleting rules
+	if test ${ALLOW_INTERNET} = true; then
+		echo "Configuring iptables for NAT"
+		iptables -v -t nat -A $(echo ${RULE_3})
+		iptables -v -A $(echo ${RULE_4})
+		iptables -v -A $(echo ${RULE_5})
+	fi
 
-echo "Deleting iptables"
-iptables -v -t nat -D $(echo ${RULE_3})
-iptables -v -D $(echo ${RULE_4})
-echo "Deleting rule regarding bridge, may informe error, it's ok"
-iptables -v -D $(echo ${RULE_4_1})
-iptables -v -D $(echo ${RULE_5})
-echo "Deleting iptables IPs Excluded"
-IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
-for IP in $IPS
-do
-    iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
-done
-echo "Deleting IP Range Blocking"
-iptables -v -D $(echo ${RULE_6})
+	# Block intranet
+	if test ${BLOCK_INTRANET} = true; then
+		echo "Blocking intranet"
+		echo "Creating IP exceptions if exists..."
+		IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
+		SEQ=0
+		for IP in $IPS
+		do
+			SEQ=$[$SEQ+1]
+			iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
+		done
+		SEQ=$[$SEQ+1]
+	fi
 
-# ===================================================
-
-if test ${ALLOW_INTERNET} = true; then
-    echo "Configuring iptables for NAT"
-    iptables -v -t nat -A $(echo ${RULE_3})
-    iptables -v -A $(echo ${RULE_4})
-    iptables -v -A $(echo ${RULE_5})
+	if test ${BLOCK_INTRANET} = true; then
+		echo "Blocking Intranet IP Range if exists..." # RULE 6
+		iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
+	fi
 fi
 
-# Block intranet
-if test ${BLOCK_INTRANET} = true; then
-    echo "Blocking intranet"
-    echo "Creating IP exceptions if exists..."
-    IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
-    SEQ=0
-    for IP in $IPS
-    do
-        SEQ=$[$SEQ+1]
-        iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
-    done
-    SEQ=$[$SEQ+1]
-    # Rule regarding bridge
-    if test ${BRIDGE_ACTIVE} = true; then
-        echo"Enabling bridge trafic"
-        iptables -v -I FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT
-    fi
-fi
-
-# Add bridge rule
 if test ${BRIDGE_ACTIVE} = true; then
-    iptables -v -I $(echo ${RULE_4_1})
-fi
 
-if test ${BLOCK_INTRANET} = true; then
-    echo "Blocking Intranet IP Range if exists..." # RULE 6
-    iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
+RULE_3="POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE"
+RULE_4="FORWARD -s ${INTRANET_IP_RANGE} -s ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
+RULE_5="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT"
+RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
+
+
+	if test ${ALLOW_INTERNET} = true; then
+		echo "Configuring iptables for NAT"
+		iptables -v -t nat -A $(echo ${RULE_3})
+		iptables -v -A $(echo ${RULE_4})
+		iptables -v -A $(echo ${RULE_4_1})
+		iptables -v -A $(echo ${RULE_5})
+	fi
+
+	# Block intranet
+	if test ${BLOCK_INTRANET} = true; then
+		echo "Blocking intranet"
+		echo "Creating IP exceptions if exists..."
+		IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
+		SEQ=0
+		for IP in $IPS
+		do
+			SEQ=$[$SEQ+1]
+			iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
+		done
+		SEQ=$[$SEQ+1]
+	fi
+
+	if test ${BLOCK_INTRANET} = true; then
+		echo "Blocking Intranet IP Range if exists..." # RULE 6
+		iptables -v -A FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
+	fi
 fi
 
 # ===================================================
