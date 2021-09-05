@@ -114,6 +114,32 @@ echo "Network interface set to ${INTERFACE}"
 # iptables rules
 INTERNET_IF="eth0"
 
+# deleting rules
+echo "Deleting iptables"
+echo "Deleting rule regarding bridge, may informe error, it's ok"
+iptables -v -t nat -D POSTROUTING -o ${INTERNET_IF} -j MASQUERADE
+iptables -v -t nat -D POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE
+iptables -v -D FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -v -D FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT
+iptables -v -D FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT
+iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT
+iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT
+echo "Deleting iptables IPs Excluded"
+IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
+for IP in $IPS
+do
+    iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
+done
+echo "Deleting IP Range Blocking"
+iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
+iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
+echo "End deleting iptables"
+
+# =========================
+
 # Regras sem bridge
 if test ${BRIDGE_ACTIVE} = false; then
 
@@ -153,7 +179,10 @@ if test ${BRIDGE_ACTIVE} = true; then
 
 RULE_3="POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE"
 RULE_4="FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
+RULE_4_1="FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT"
+RULE_4_2="FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+RULE_4_3="FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT"
+RULE_4_4="FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_5="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
@@ -163,6 +192,9 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 		iptables -v -t nat -A $(echo ${RULE_3})
 		iptables -v -A $(echo ${RULE_4})
 		iptables -v -A $(echo ${RULE_4_1})
+		iptables -v -A $(echo ${RULE_4_2})
+		iptables -v -A $(echo ${RULE_4_3})
+		iptables -v -A $(echo ${RULE_4_4})
 		iptables -v -A $(echo ${RULE_5})
 	fi
 
