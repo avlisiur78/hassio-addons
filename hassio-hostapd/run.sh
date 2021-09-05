@@ -152,7 +152,7 @@ fi
 if test ${BRIDGE_ACTIVE} = true; then
 
 RULE_3="POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE"
-RULE_4="FORWARD -s ${INTRANET_IP_RANGE} -s ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+RULE_4="FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_4_1="FORWARD -s ${ADDRESS}/${MASK} -d ${BRIDGE_IP} -j ACCEPT"
 RULE_5="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
@@ -182,7 +182,7 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
 	if test ${BLOCK_INTRANET} = true; then
 		echo "Blocking Intranet IP Range if exists..." # RULE 6
-		iptables -v -A FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
+		iptables -v -A FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${INTRANET_IP_RANGE} -j DROP)
 	fi
 fi
 
