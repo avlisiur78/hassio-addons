@@ -124,9 +124,9 @@ iptables -v -D FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATE
 iptables -v -D FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT
 iptables -v -D FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT
-iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT
 iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT
+iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT
 echo "Deleting iptables IPs Excluded"
 IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
