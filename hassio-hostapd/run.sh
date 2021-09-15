@@ -187,7 +187,7 @@ RULE_4="FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state R
 RULE_4_1="FORWARD -i wlan0 -s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT"
 RULE_4_2="FORWARD -i wlan0 -s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_4_3="FORWARD -i eth0 -s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT"
-RULE_4_4="FORWARD -i eth0 -s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+RULE_4_4="FORWARD -i eth0 -s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT".
 RULE_5="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
