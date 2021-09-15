@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
     ifdown $INTERFACE
     sleep 1
@@ -8,6 +7,7 @@ reset_interfaces(){
     ip addr flush dev $INTERFACE
 }
 
+# SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 term_handler(){
     echo "Reseting interfaces"
     reset_interfaces
