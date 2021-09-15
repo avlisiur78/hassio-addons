@@ -18,7 +18,7 @@ term_handler(){
 # Setup signal handlers
 trap 'term_handler' SIGTERM
 
-echo "Starting..."
+echo "Starting config..."
 
 CONFIG_PATH=/data/options.json
 
@@ -46,12 +46,13 @@ DHCP_DOMAIN=$(jq --raw-output ".dhcp_domain" $CONFIG_PATH)
 DHCP_LEASE=$(jq --raw-output ".dhcp_lease" $CONFIG_PATH)
 DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
 DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
-DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
+DHCP_STATIC=$(jq --raw-output '.dhcp_static_lease | join(" ")' $CONFIG_PATH)
 
 OPENVPN_ACTIVE=$(jq --raw-output ".openvpn_active" $CONFIG_PATH)
 OVPNFILE="$(jq --raw-output '.ovpnfile' $CONFIG_PATH)"
 OPENVPN_CONFIG=/share/${OVPNFILE}
 
+echo "Performing variables validations..."
 # Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
 for required_var in "${required_vars[@]}"; do
@@ -64,18 +65,21 @@ done
 INTERFACES_AVAILABLE="$(ifconfig -a | grep wl | cut -d ' ' -f '1')"
 UNKNOWN=true
 
+# Check if interface is informed
 if [[ -z ${INTERFACE} ]]; then
         echo >&2 "Network interface not set. Please set one of the available:"
         echo >&2 "${INTERFACES_AVAILABLE}"
         exit 1
 fi
 
+# Check if interface informed, exists
 for OPTION in ${INTERFACES_AVAILABLE}; do
     if [[ ${INTERFACE} == ${OPTION} ]]; then
         UNKNOWN=false
     fi 
 done
 
+# If interface informed do not exist then
 if [[ ${UNKNOWN} == true ]]; then
         echo >&2 "Unknown network interface ${INTERFACE}. Please set one of the available:"
         echo >&2 "${INTERFACES_AVAILABLE}"
@@ -83,6 +87,7 @@ if [[ ${UNKNOWN} == true ]]; then
 fi
 
 # Check the mask to use
+echo "Checking mask to use..."
 if [[ -z ${DHCP_SUBNET} ]]; then
         MASK=24
 else
