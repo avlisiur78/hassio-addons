@@ -2,8 +2,6 @@
 
 # SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
 reset_interfaces(){
-    ip a d $BRIDGE_IP dev $BRIDGE_ETH 
-    sleep 1
     ifdown $INTERFACE
     sleep 1
     ip link set $INTERFACE down
@@ -50,10 +48,6 @@ DHCP_ROUTES=$(jq --raw-output ".dhcp_routes_enable" $CONFIG_PATH)
 DHCP_STATICROUTES=$(jq --raw-output ".dhcp_staticroutes" $CONFIG_PATH)
 DHCP_STATIC=$(jq --raw-output ".dhcp_static_lease | join(" ")" $CONFIG_PATH)
 
-BRIDGE_ETH="eth0:99"
-BRIDGE_ACTIVE=$(jq --raw-output ".bridge_eth99" $CONFIG_PATH)
-BRIDGE_IP=$(jq --raw-output ".bridge_ip_eth99" $CONFIG_PATH)
-
 OPENVPN_ACTIVE=$(jq --raw-output ".openvpn_active" $CONFIG_PATH)
 OVPNFILE="$(jq --raw-output '.ovpnfile' $CONFIG_PATH)"
 OPENVPN_CONFIG=/share/${OVPNFILE}
@@ -66,7 +60,6 @@ for required_var in "${required_vars[@]}"; do
         exit 1
     fi
 done
-
 
 INTERFACES_AVAILABLE="$(ifconfig -a | grep wl | cut -d ' ' -f '1')"
 UNKNOWN=true
@@ -89,6 +82,7 @@ if [[ ${UNKNOWN} == true ]]; then
         exit 1
 fi
 
+# Check the mask to use
 if [[ -z ${DHCP_SUBNET} ]]; then
         MASK=24
 else
@@ -119,49 +113,42 @@ echo "**** Deleting iptables ****"
 echo "Deleting rules, may present errors, it's ok !!"
 echo "=============================================="
 iptables -v -t nat -D POSTROUTING -o ${INTERNET_IF} -j MASQUERADE
-iptables -v -t nat -D POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE
 iptables -v -D FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -v -D FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT
-iptables -v -D FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT
-iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -v -D FORWARD -i eth0-s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT
-iptables -v -D FORWARD -i wlan0-s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT
 echo "Deleting iptables IPs Excluded"
 IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
 for IP in $IPS
 do
-    iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
+    iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT)
 done
 echo "Deleting IP Range Blocking"
-iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 echo "**** End deleting iptables ****"
 
 # =========================
 
 # Regras sem bridge
-if test ${BRIDGE_ACTIVE} = false; then
 
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_5="FORWARD -i ${INTERFACE} -o ${INTERNET_IF} -j ACCEPT"
 RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
+    	# Allow internet / apply rules
 	if test ${ALLOW_INTERNET} = true; then
 		echo "Configuring iptables for NAT"
+		#Rule 3
 		iptables -v -t nat -A $(echo ${RULE_3})
-		echo "Rule 4"
+		#Rule 4
 		iptables -v -A $(echo ${RULE_4})
-		echo "Rule 5"
+		#Rule 5
 		iptables -v -A $(echo ${RULE_5})
 	fi
 
-	# Block intranet
+	# Block intranet / apply rules
 	if test ${BLOCK_INTRANET} = true; then
-		echo "Blocking intranet"
-		echo "Creating IP exceptions if exists..."
+		echo "Starting Blocking intranet"
+		echo "Creating IP exceptions if requested..."
 		IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
 		SEQ=0
 		for IP in $IPS
@@ -170,69 +157,13 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 			iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
 		done
 		SEQ=$[$SEQ+1]
-	fi
-
-	if test ${BLOCK_INTRANET} = true; then
-		echo "Blocking Intranet IP Range if exists..." # RULE 6
-		echo "Rule 6"
+		echo "Blocking Intranet IP Range..." # RULE 6
 		iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 	fi
-fi
-
-if test ${BRIDGE_ACTIVE} = true; then
-
-#RULE_3="POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE"
-RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
-RULE_4="FORWARD -s ${INTRANET_IP_RANGE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-RULE_4_1="FORWARD -i wlan0 -s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT"
-RULE_4_2="FORWARD -i wlan0 -s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-RULE_4_3="FORWARD -i eth0 -s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT"
-RULE_4_4="FORWARD -i eth0 -s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT".
-RULE_5="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j ACCEPT"
-RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
-
-
-	if test ${ALLOW_INTERNET} = true; then
-		echo "Rule 4"
-		iptables -v -A $(echo ${RULE_4})
-		echo "Rule 4_1"
-		iptables -v -A $(echo ${RULE_4_1})
-		echo "Rule 4_2"
-		iptables -v -A $(echo ${RULE_4_2})
-		echo "Rule 4_3"
-		iptables -v -A $(echo ${RULE_4_3})
-		echo "Rule 4_4"
-		iptables -v -A $(echo ${RULE_4_4})
-		echo "Rule 5"
-		iptables -v -A $(echo ${RULE_5})
-		echo "Configuring iptables for NAT"
-		iptables -v -t nat -A $(echo ${RULE_3})
-	fi
-
-	# Block intranet
-	if test ${BLOCK_INTRANET} = true; then
-		echo "Blocking intranet"
-		echo "Creating IP exceptions if exists..."
-		IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
-		SEQ=0
-		for IP in $IPS
-		do
-			SEQ=$[$SEQ+1]
-			iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
-		done
-		SEQ=$[$SEQ+1]
-	fi
-
-	if test ${BLOCK_INTRANET} = true; then
-		echo "Blocking Intranet IP Range if exists..." # RULE 6
-		echo "Rule 6"
-		iptables -v -A FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${INTRANET_IP_RANGE} -j DROP)
-	fi
-fi
 
 # ===================================================
-
 # Setup hostapd.conf
+# ===================
 HCONFIG="/hostapd.conf"
 
 echo "Setup hostapd ..."
@@ -245,8 +176,8 @@ echo "interface=${INTERFACE}" >> ${HCONFIG}
 echo "" >> ${HCONFIG}
 
 # ===================================================
-
 # Setup interface
+# ===================
 IFFILE="/etc/network/interfaces"
 
 echo "Setup interface ..."
@@ -255,33 +186,17 @@ echo "iface ${INTERFACE} inet static" >> ${IFFILE}
 echo "  address ${ADDRESS}" >> ${IFFILE}
 echo "  netmask ${NETMASK}" >> ${IFFILE}
 echo "  broadcast ${BROADCAST}" >> ${IFFILE}
-# criar eth0:99
-if test ${BRIDGE_ACTIVE} = true; then
-    echo "" >> ${IFFILE}
-    echo "iface ${BRIDGE_ETH} inet static" >> ${IFFILE}
-    echo "  address ${BRIDGE_IP}" >> ${IFFILE}
-    echo "  netmask ${NETMASK}" >> ${IFFILE}
-    echo "  broadcast ${BROADCAST}" >> ${IFFILE}
- #   echo "  gateway ${ADDRESS}" >> ${IFFILE}
-fi
 echo "" >> ${IFFILE}
-
-# ===================================================
 
 echo "Resseting interfaces"
 reset_interfaces
-# criar eth0:99
-if test ${BRIDGE_ACTIVE} = true; then
-    ifup ${BRIDGE_ETH}
-    sleep 3
-fi
 ifup ${INTERFACE}
 sleep 1
 
 # ===================================================
-
+# Setup dhcpd.conf
+# ===================
 if test ${DHCP_SERVER} = true; then
-    # Setup hdhcpd.conf
     UCONFIG="/etc/udhcpd.conf"
 
     echo "Setup udhcpd ..."
@@ -293,36 +208,37 @@ if test ${DHCP_SERVER} = true; then
     echo "opt router     ${DHCP_ROUTER}"   >> ${UCONFIG}
     echo "option domain  ${DHCP_DOMAIN}"   >> ${UCONFIG}
     echo "option lease   ${DHCP_LEASE}"    >> ${UCONFIG}
+    
+    	
+    	# Setup static routes
+	# ===================
+	if test ${DHCP_ROUTES} = true; then
+	    echo "option staticroutes ${DHCP_STATICROUTES}" >> ${UCONFIG}
+	fi
+	
+	# Create dhcp_static_leases
+	# ===================
+	DHCP_COUNT_LEASE=$(jq -r '.dhcp_static_lease | length' $CONFIG_PATH)
+	COUNT_LEASE=$[$DHCP_COUNT_LEASE - 1]
+	TRK_LEASE=0
 
-if test ${DHCP_ROUTES} = true; then
-    # Setup static routes
-    echo "option staticroutes ${DHCP_STATICROUTES}" >> ${UCONFIG}
-fi
-
-# ===================================================
-
-# Create dhcp_static_leases
-# ===================
-DHCP_COUNT_LEASE=$(jq -r '.dhcp_static_lease | length' $CONFIG_PATH)
-COUNT_LEASE=$[$DHCP_COUNT_LEASE - 1]
-TRK_LEASE=0
-
-if [ $COUNT_LEASE -ge 0 ]; then
-   while [ $TRK_LEASE -le $COUNT_LEASE ] 
-    do
-      DHCP_LEASE_NAME=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].name?' $CONFIG_PATH)
-      DHCP_LEASE_MAC=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].mac?' $CONFIG_PATH)
-      DHCP_LEASE_IP=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].ip?' $CONFIG_PATH)
-      # write do file
-      echo '#'$DHCP_LEASE_NAME                                >> ${UCONFIG}
-      echo 'static_lease '$DHCP_LEASE_MAC' '$DHCP_LEASE_IP    >> ${UCONFIG}
-      TRK_LEASE=$[$TRK_LEASE+1]
-    done
-else
-    echo "#static_lease non requested."                       >> ${UCONFIG}
-fi
+	if [ $COUNT_LEASE -ge 0 ]; then
+	   while [ $TRK_LEASE -le $COUNT_LEASE ] 
+	    do
+	      DHCP_LEASE_NAME=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].name?' $CONFIG_PATH)
+	      DHCP_LEASE_MAC=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].mac?' $CONFIG_PATH)
+	      DHCP_LEASE_IP=$(jq -r '.dhcp_static_lease['$TRK_LEASE'].ip?' $CONFIG_PATH)
+	      # write do file
+	      echo '#'$DHCP_LEASE_NAME                                >> ${UCONFIG}
+	      echo 'static_lease '$DHCP_LEASE_MAC' '$DHCP_LEASE_IP    >> ${UCONFIG}
+	      TRK_LEASE=$[$TRK_LEASE+1]
+	    done
+	else
+	    echo "#static_lease non requested."                       >> ${UCONFIG}
+	fi
+	# ===================
+	
     echo ""                                                   >> ${UCONFIG}
-
     echo $DHCP_STATIC
     echo "Starting DHCP server..."
     udhcpd -f &
@@ -342,6 +258,8 @@ while true; do
 done
 
 # ===================================================
+# Setup OpenVPN Client
+# ===================
 
 echo "Starting OpenVPN Client"
 
@@ -405,4 +323,5 @@ if test ${OPENVPN_ACTIVE} = true; then
     openvpn --config ${OPENVPN_CONFIG}
     
 fi
-
+# ===================================================
+echo "All done, enjoy!"
