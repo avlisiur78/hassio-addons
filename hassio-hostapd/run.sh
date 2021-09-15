@@ -1,22 +1,30 @@
 #!/bin/bash
 
+# ===================================================
+# Functions
+# ===================
+
 reset_interfaces(){
     ifdown $INTERFACE
-    sleep 1
+    sleep 2
     ip link set $INTERFACE down
     ip addr flush dev $INTERFACE
 }
 
-# SIGTERM-handler this funciton will be executed when the container receives the SIGTERM signal (when stopping)
-term_handler(){
+stop_signal(){
     echo "Reseting interfaces"
     reset_interfaces
     echo "Stopping..."
     exit 0
 }
 
-# Setup signal handlers
-trap 'term_handler' SIGTERM
+# ===================================================
+# On SIGTERM aka 'docker stop' this function will be executed
+# ===================
+
+trap 'stop_signal' SIGTERM
+
+# ===================================================
 
 echo "Starting config..."
 
@@ -53,11 +61,10 @@ OVPNFILE="$(jq --raw-output '.ovpnfile' $CONFIG_PATH)"
 OPENVPN_CONFIG=/share/${OVPNFILE}
 
 echo "Performing variables validations..."
-# Enforces required env variables
 required_vars=(SSID WPA_PASSPHRASE CHANNEL BROADCASTSSID ADDRESS NETMASK BROADCAST)
 for required_var in "${required_vars[@]}"; do
     if [[ -z ${!required_var} ]]; then
-        echo >&2 "Error: $required_var env variable not set."
+        echo >&2 "Error: $required_var enviorment variable not set."
         exit 1
     fi
 done
@@ -86,7 +93,7 @@ if [[ ${UNKNOWN} == true ]]; then
         exit 1
 fi
 
-# Check the mask to use
+# Check what mask to use
 echo "Checking mask to use..."
 if [[ -z ${DHCP_SUBNET} ]]; then
         MASK=24
@@ -94,14 +101,14 @@ else
      if [[ ${DHCP_SUBNET} = '255.255.255.0' ]]; then
          MASK=24
      fi
+     if [[ ${DHCP_SUBNET} = '255.255.252.0' ]]; then
+         MASK=22
+     fi
      if [[ ${DHCP_SUBNET} = '255.255.0.0' ]]; then
          MASK=16
      fi
      if [[ ${DHCP_SUBNET} = '255.0.0.0' ]]; then
          MASK=8
-     fi
-     if [[ ${DHCP_SUBNET} = '255.255.252.0' ]]; then
-         MASK=22
      fi
 fi
 
@@ -130,9 +137,9 @@ echo "Deleting IP Range Blocking"
 iptables -v -D FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 echo "**** End deleting iptables ****"
 
-# =========================
-
-# Regras sem bridge
+# ===================================================
+# Rules without bridge
+# ===================
 
 RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
 RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
@@ -165,6 +172,12 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 		echo "Blocking Intranet IP Range..." # RULE 6
 		iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 	fi
+
+# ===================================================
+# Rules with bridge
+# ===================
+
+# To be created
 
 # ===================================================
 # Setup hostapd.conf
