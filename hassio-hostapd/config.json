@@ -39,8 +39,6 @@
     "dhcp_routes_enable": false,
     "dhcp_staticroutes": "",
     "dhcp_static_lease": [],
-    "bridge_eth99": false,
-    "bridge_ip_eth99": "192.168.2.250",
     "openvpn_active": false,
     "ovpnfile": "client.ovpn"
   },
@@ -75,8 +73,6 @@
         "ip": "str"
       }
     ],
-    "bridge_eth99": "bool",
-    "bridge_ip_eth99": "str",
     "openvpn_active": "bool",
     "ovpnfile": "str"
   },
