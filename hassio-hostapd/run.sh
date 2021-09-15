@@ -182,10 +182,8 @@ fi
 if test ${BRIDGE_ACTIVE} = true; then
 
 #RULE_3="POSTROUTING -s ${INTRANET_IP_RANGE} -j MASQUERADE"
-#RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
-RULE_3="POSTROUTING -o ${INTERNET_IF} -s ${INTRANET_IP_RANGE} -j MASQUERADE"
-RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -m state --state RELATED,ESTABLISHED -j ACCEPT"
-#RULE_4="FORWARD -i ${INTERNET_IF} -o ${INTERFACE} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
+RULE_3="POSTROUTING -o ${INTERNET_IF} -j MASQUERADE"
+RULE_4="FORWARD -o ${INTERNET_IF} -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_4_1="FORWARD -i wlan0 -s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -j ACCEPT"
 RULE_4_2="FORWARD -i wlan0 -s ${ADDRESS}/${MASK} -o eth0 -d ${ADDRESS}/${MASK} -m state --state RELATED,ESTABLISHED -j ACCEPT"
 RULE_4_3="FORWARD -i eth0 -s ${ADDRESS}/${MASK} -o wlan0 -d ${ADDRESS}/${MASK} -j ACCEPT"
@@ -195,10 +193,6 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
 
 	if test ${ALLOW_INTERNET} = true; then
-		echo "Configuring iptables for NAT"
-		iptables -v -t nat -A $(echo ${RULE_3})
-		echo "Rule 4"
-		iptables -v -A $(echo ${RULE_4})
 		echo "Rule 4_1"
 		iptables -v -A $(echo ${RULE_4_1})
 		echo "Rule 4_2"
@@ -209,6 +203,10 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 		iptables -v -A $(echo ${RULE_4_4})
 		echo "Rule 5"
 		iptables -v -A $(echo ${RULE_5})
+		echo "Configuring iptables for NAT"
+		iptables -v -t nat -A $(echo ${RULE_3})
+		echo "Rule 4"
+		iptables -v -A $(echo ${RULE_4})
 	fi
 
 	# Block intranet
