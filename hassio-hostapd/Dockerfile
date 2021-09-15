@@ -1,7 +1,7 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-MAINTAINER Rui Silva <avlisiur+78@gmail.com>
+MAINTAINER Rui Silva <avlisiur+git78@gmail.com>
 
 # Set shell
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
