@@ -160,8 +160,8 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 
 	# Block intranet
 	if test ${BLOCK_INTRANET} = true; then
-		echo "«« Starting to block intranet »»"
-		echo "= Creating IP exceptions if exists... ="
+		echo "Blocking intranet"
+		echo "Creating IP exceptions if exists..."
 		IPS=$(echo $INTRANET_IPS_EXCLUDE | tr "," "\n")
 		SEQ=0
 		for IP in $IPS
@@ -170,11 +170,13 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 			iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
 		done
 		SEQ=$[$SEQ+1]
-		echo "= Blocking Intranet IP Range =" # RULE 6
+	fi
+
+	if test ${BLOCK_INTRANET} = true; then
+		echo "Blocking Intranet IP Range if exists..." # RULE 6
 		echo "Rule 6"
 		iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP
 	fi
-
 fi
 
 if test ${BRIDGE_ACTIVE} = true; then
@@ -224,6 +226,9 @@ RULE_6="FORWARD -s ${ADDRESS}/${MASK} -d ${INTRANET_IP_RANGE} -j DROP"
 			iptables -v -I FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${IP} -j ACCEPT) 
 		done
 		SEQ=$[$SEQ+1]
+	fi
+
+	if test ${BLOCK_INTRANET} = true; then
 		echo "Blocking Intranet IP Range if exists..." # RULE 6
 		echo "Rule 6"
 		iptables -v -A FORWARD ${SEQ} -s ${ADDRESS}/${MASK} -d $(echo ${INTRANET_IP_RANGE} -j DROP)
