@@ -5,7 +5,7 @@ FROM $BUILD_FROM
 MAINTAINER Rui Silva <avlisiur+git78@gmail.com>
 
 # Set shell
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV LANG C.UTF-8
 
