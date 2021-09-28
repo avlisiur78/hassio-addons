@@ -8,6 +8,8 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV LANG C.UTF-8
 
+RUN sed -i -e 's/http:/https:/' /etc/apk/repositories
+
 # Install requirements for add-on
 RUN apk update && apk add --no-cache strace \
                             bash \
