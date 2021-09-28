@@ -8,9 +8,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV LANG C.UTF-8
 
-RUN echo http://alpine.42.fr/v3.14/main > /etc/apk/repositories; \
-    echo http://alpine.42.fr/v3.14/community >> /etc/apk/repositories
-
 # Install requirements for add-on
 RUN apk update && apk add --no-cache strace \
                             bash \
