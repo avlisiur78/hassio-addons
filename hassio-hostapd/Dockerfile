@@ -8,6 +8,8 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV LANG C.UTF-8
 
+RUN echo -e $BUILD_FROM > /etc/apk/repositories
+
 # Install requirements for add-on
 RUN apk update && apk add --no-cache strace \
                             bash \
@@ -24,6 +26,7 @@ RUN apk update && apk add --no-cache strace \
                             net-tools \
                             sudo \
                             busybox-extras  && \
+                            rm -rf /etc/apk/repositories/* && \
                             rm -rf /tmp/* && \
                             rm -rf /var/cache/apk/*
 
