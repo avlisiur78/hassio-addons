@@ -1,7 +1,6 @@
-ARG BUILD_FROM=hassioaddons/base:7.0.2
-#ARG BUILD_FROM
-#FROM $BUILD_FROM
-#FROM %%BASE_IMAGE%%
+ARG BUILD_FROM
+FROM $BUILD_FROM
+
 MAINTAINER Rui Silva <avlisiur+git78@gmail.com>
 
 # Set shell
