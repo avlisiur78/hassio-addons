@@ -14,7 +14,7 @@ RUN apk update && apk add --no-cache bash \
                             jq \
                             iw \
                             linux-firmware-other \
-                            linux-firmware-ath6k 
+                            linux-firmware-ath6k \
                             linux-firmware-ath10k \
                             linux-firmware-ath9k_htc \
                             openvpn \
