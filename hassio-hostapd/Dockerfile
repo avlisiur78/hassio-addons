@@ -1,5 +1,9 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+#ARG BUILD_FROM
+#FROM $BUILD_FROM
+
+ARG BUILD_FROM=ghcr.io/hassio-addons/base/amd64:10.0.1
+# hadolint ignore=DL3006
+FROM ${BUILD_FROM}
 
 MAINTAINER Rui Silva <avlisiur+git78@gmail.com>
 
@@ -8,7 +12,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV LANG C.UTF-8
 
-RUN echo -e $BUILD_FROM > /etc/apk/repositories
+RUN echo -e "http://nl.alpinelinux.org/alpine/v3.14/main\nhttp://nl.alpinelinux.org/alpine/v3.14/community" > /etc/apk/repositories
 
 # Install requirements for add-on
 RUN apk update && apk add --no-cache strace \
