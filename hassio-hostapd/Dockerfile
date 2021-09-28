@@ -11,7 +11,8 @@ SHELL ["/bin/sh", "-o", "pipefail", "-c"]
 ENV LANG C.UTF-8
 
 # Install requirements for add-on
-RUN apk update && apk add --no-cache bash \
+RUN apk update && apk add --no-cache strace \
+                            bash \
                             jq \
                             iw \
                             linux-firmware-other \
