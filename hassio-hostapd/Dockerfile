@@ -1,5 +1,6 @@
-ARG BUILD_FROM
-FROM $BUILD_FROM
+#ARG BUILD_FROM
+#FROM $BUILD_FROM
+FROM node:14-alpine3.12 as base
 
 MAINTAINER Rui Silva <avlisiur+git78@gmail.com>
 
