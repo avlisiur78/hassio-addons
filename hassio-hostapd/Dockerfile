@@ -5,7 +5,7 @@ FROM node:14-alpine3.14
 MAINTAINER Rui Silva <avlisiur+git78@gmail.com>
 
 # Set shell
-SHELL ["/bin/sh", "-o", "pipefail", "-c"]
+#SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV LANG C.UTF-8
 
